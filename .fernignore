@@ -1,0 +1,34 @@
+# Specify files that shouldn't be modified by Fern
+
+# Fern metadata
+.fern/
+
+# Custom wrapper client and token management
+src/auth0/myorganization/myorganization_client.py
+src/auth0/myorganization/token_provider.py
+
+# Telemetry customization (Auth0 format with dynamic versioning)
+src/auth0/myorganization/core/client_wrapper.py
+
+# Root auth0 __init__.pys
+src/auth0/myorganization/__init__.py
+src/auth0/__init__.py
+
+# Tests
+tests/myorganization/
+
+# Project config and docs
+pyproject.toml
+poetry.lock
+requirements.txt
+README.md
+CHANGELOG.md
+.version
+.shiprc
+.snyk
+.semgrepignore
+
+# Git and CI configuration
+.gitignore
+.github/
+LICENSE
