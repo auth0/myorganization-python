@@ -1,10 +1,17 @@
-# Auth0 My Organization Python SDK
+![Python SDK for Auth0 MyOrganization](https://cdn.auth0.com/website/sdks/banners/myorganization-python-banner.png)
 
-[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fauth0%2Fmyorganization-python)
+<div align="center">
+
 [![pypi](https://img.shields.io/pypi/v/myorganization-python)](https://pypi.python.org/pypi/myorganization-python)
 [![License](https://img.shields.io/:license-Apache%202.0-blue.svg?style=flat)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/auth0/myorganization-python/ci.yml?branch=main&style=flat-square)](https://github.com/auth0/myorganization-python/actions?query=branch%3Amain)
+[![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fauth0%2Fmyorganization-python)
 
-[Documentation](#documentation) - [Getting Started](#getting-started) - [API Reference](#api-reference) - [Feedback](#feedback)
+📚 [Documentation](#documentation) • 🚀 [Getting Started](#getting-started) • 💬 [Feedback](#feedback)
+
+</div>
+
+---
 
 ## Documentation
 

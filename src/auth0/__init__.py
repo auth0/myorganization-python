@@ -2,5 +2,20 @@
 
 from . import myorganization
 from auth0.myorganization.version import __version__
+from auth0.myorganization.types import (
+    IdpOidcOptionsRequest,
+    IdpOidcRequest,
+    IdpOidcUpdateRequest,
+    OrgBranding,
+    OrgBrandingColors,
+)
 
-__all__ = ["myorganization", "__version__"]
+__all__ = [
+    "myorganization",
+    "__version__",
+    "IdpOidcOptionsRequest",
+    "IdpOidcRequest",
+    "IdpOidcUpdateRequest",
+    "OrgBranding",
+    "OrgBrandingColors",
+]
