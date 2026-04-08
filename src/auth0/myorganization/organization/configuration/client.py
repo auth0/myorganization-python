@@ -32,7 +32,7 @@ class ConfigurationClient:
 
     def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> GetConfigurationResponseContent:
         """
-        Retrieve the configuration for the /my-org API. This will return all stored client information with the exception of attributes that are identifiers. Identifier attributes will be given their own endpoint that will return the full object. This will give the components all of the information they will need to be successful. The SDK provider for the components should manage fetching and caching this information for all components.
+        Retrieve the My Organization API configuration. Returns only the `connection_deletion_behavior` and `allowed_strategies`. Identifier attributes such as `user_attribute_profile_id` and `connection_profile_id` are not included. Cache this information, as it does not change frequently.
 
         Parameters
         ----------
@@ -84,7 +84,7 @@ class AsyncConfigurationClient:
 
     async def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> GetConfigurationResponseContent:
         """
-        Retrieve the configuration for the /my-org API. This will return all stored client information with the exception of attributes that are identifiers. Identifier attributes will be given their own endpoint that will return the full object. This will give the components all of the information they will need to be successful. The SDK provider for the components should manage fetching and caching this information for all components.
+        Retrieve the My Organization API configuration. Returns only the `connection_deletion_behavior` and `allowed_strategies`. Identifier attributes such as `user_attribute_profile_id` and `connection_profile_id` are not included. Cache this information, as it does not change frequently.
 
         Parameters
         ----------

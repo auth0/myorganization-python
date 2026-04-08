@@ -6,6 +6,7 @@ from json.decoder import JSONDecodeError
 from ....core.api_error import ApiError
 from ....core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ....core.http_response import AsyncHttpResponse, HttpResponse
+from ....core.parse_error import ParsingError
 from ....core.pydantic_utilities import parse_obj_as
 from ....core.request_options import RequestOptions
 from ....errors.forbidden_error import ForbiddenError
@@ -14,6 +15,7 @@ from ....errors.too_many_requests_error import TooManyRequestsError
 from ....errors.unauthorized_error import UnauthorizedError
 from ....types.error_response_content import ErrorResponseContent
 from ....types.get_idp_configuration_response_content import GetIdpConfigurationResponseContent
+from pydantic import ValidationError
 
 
 class RawIdentityProvidersClient:
@@ -24,7 +26,7 @@ class RawIdentityProvidersClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[GetIdpConfigurationResponseContent]:
         """
-        Retrieve the connection profile for the application. This will give the components all of the information they will need to be successful. The SDK provider for the components should manage fetching and caching this information for all components.
+        Retrieve the [Connection Profile](https://auth0.com/docs/authenticate/enterprise-connections/connection-profile) for this application. You should cache this information as it does not change frequently.
 
         Parameters
         ----------
@@ -98,6 +100,10 @@ class RawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
@@ -109,7 +115,7 @@ class AsyncRawIdentityProvidersClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[GetIdpConfigurationResponseContent]:
         """
-        Retrieve the connection profile for the application. This will give the components all of the information they will need to be successful. The SDK provider for the components should manage fetching and caching this information for all components.
+        Retrieve the [Connection Profile](https://auth0.com/docs/authenticate/enterprise-connections/connection-profile) for this application. You should cache this information as it does not change frequently.
 
         Parameters
         ----------
@@ -183,4 +189,8 @@ class AsyncRawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

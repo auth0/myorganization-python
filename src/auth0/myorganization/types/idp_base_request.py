@@ -4,13 +4,10 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .idp_id import IdpId
 from .idp_strategy_enum import IdpStrategyEnum
-from .organization_access_level_enum import OrganizationAccessLevelEnum
 
 
 class IdpBaseRequest(UniversalBaseModel):
-    id: typing.Optional[IdpId] = None
     name: str = pydantic.Field()
     """
     The name of the identity provider
@@ -41,8 +38,6 @@ class IdpBaseRequest(UniversalBaseModel):
     """
     True if the identity provider is enabled for the organization.
     """
-
-    access_level: typing.Optional[OrganizationAccessLevelEnum] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -2,4 +2,4 @@
 
 import typing
 
-IdentityProvidersConfigProvisioningMethodsEnum = typing.Union[typing.Literal["scim", "google-sync"], typing.Any]
+IdentityProvidersConfigProvisioningMethodsEnum = typing.Union[typing.Literal["scim"], typing.Any]

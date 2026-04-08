@@ -2,4 +2,6 @@
 
 import typing
 
-IdentityProvidersConfigEnabledFeaturesEnum = typing.Union[typing.Literal["provisioning", "logout"], typing.Any]
+IdentityProvidersConfigEnabledFeaturesEnum = typing.Union[
+    typing.Literal["provisioning", "universal_logout"], typing.Any
+]

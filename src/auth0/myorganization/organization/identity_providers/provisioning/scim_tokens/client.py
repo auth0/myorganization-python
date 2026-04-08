@@ -33,7 +33,7 @@ class ScimTokensClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ListIdpProvisioningScimTokensResponseContent:
         """
-        List the Provisioning SCIM tokens for this identity provider.
+        Retrieve a list of [SCIM tokens](https://auth0.com/docs/authenticate/protocols/scim/configure-inbound-scim#scim-endpoints-and-tokens) for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -69,7 +69,7 @@ class ScimTokensClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateIdpProvisioningScimTokenResponseContent:
         """
-        Create a Provisioning SCIM token for this identity provider.
+        Create a new SCIM token for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -109,7 +109,7 @@ class ScimTokensClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Delete a Provisioning SCIM configuration for an identity provider.
+        Revoke a SCIM token specified by token ID for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -159,7 +159,7 @@ class AsyncScimTokensClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ListIdpProvisioningScimTokensResponseContent:
         """
-        List the Provisioning SCIM tokens for this identity provider.
+        Retrieve a list of [SCIM tokens](https://auth0.com/docs/authenticate/protocols/scim/configure-inbound-scim#scim-endpoints-and-tokens) for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -203,7 +203,7 @@ class AsyncScimTokensClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> CreateIdpProvisioningScimTokenResponseContent:
         """
-        Create a Provisioning SCIM token for this identity provider.
+        Create a new SCIM token for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -253,7 +253,7 @@ class AsyncScimTokensClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> None:
         """
-        Delete a Provisioning SCIM configuration for an identity provider.
+        Revoke a SCIM token specified by token ID for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------

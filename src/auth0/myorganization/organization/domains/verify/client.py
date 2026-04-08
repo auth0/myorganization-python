@@ -30,7 +30,7 @@ class VerifyClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> StartOrganizationDomainVerificationResponseContent:
         """
-        Get a verification text and start the domain verification process for a particular domain.
+        Initiate the verification process for a domain specified by ID for this Organization.
 
         Parameters
         ----------
@@ -78,7 +78,7 @@ class AsyncVerifyClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> StartOrganizationDomainVerificationResponseContent:
         """
-        Get a verification text and start the domain verification process for a particular domain.
+        Initiate the verification process for a domain specified by ID for this Organization.
 
         Parameters
         ----------

@@ -10,31 +10,32 @@ from .invitation_id import InvitationId
 from .member_invitation_invitee import MemberInvitationInvitee
 from .member_invitation_inviter import MemberInvitationInviter
 from .org_id import OrgId
+from .org_member_role_id import OrgMemberRoleId
 
 
 class MemberInvitation(UniversalBaseModel):
     id: typing.Optional[InvitationId] = None
     organization_id: typing.Optional[OrgId] = None
-    inviter: MemberInvitationInviter
-    invitee: MemberInvitationInvitee
+    inviter: typing.Optional[MemberInvitationInviter] = None
+    invitee: typing.Optional[MemberInvitationInvitee] = None
     identity_provider_id: typing.Optional[IdpId] = None
-    created_at: dt.datetime = pydantic.Field()
+    created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
     The ISO 8601 formatted timestamp representing the creation time of the invitation.
     """
 
-    expires_at: dt.datetime = pydantic.Field()
+    expires_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
     The ISO 8601 formatted timestamp representing the expiration time of the invitation.
     """
 
-    roles: typing.Optional[typing.List[str]] = None
-    invitation_url: str = pydantic.Field()
+    roles: typing.Optional[typing.List[OrgMemberRoleId]] = None
+    invitation_url: typing.Optional[str] = pydantic.Field(default=None)
     """
     The invitation url to be sent to the invitee.
     """
 
-    ticket_id: str = pydantic.Field()
+    ticket_id: typing.Optional[str] = pydantic.Field(default=None)
     """
     The ID of the invitation ticket.
     """

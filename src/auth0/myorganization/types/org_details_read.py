@@ -4,15 +4,23 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .domain_verification_enum import DomainVerificationEnum
+from .org_branding import OrgBranding
+from .org_id import OrgId
 
 
-class IdentityProvidersConfigDomainAlias(UniversalBaseModel):
+class OrgDetailsRead(UniversalBaseModel):
+    id: typing.Optional[OrgId] = None
+    name: typing.Optional[str] = pydantic.Field(default=None)
     """
-    It is an object which contains domain verification related rules and restrictions.
+    The name of this organization.
     """
 
-    domain_verification: DomainVerificationEnum
+    display_name: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Friendly name of this organization.
+    """
+
+    branding: typing.Optional[OrgBranding] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

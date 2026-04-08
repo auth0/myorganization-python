@@ -42,7 +42,7 @@ class IdentityProvidersClient:
 
     def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> ListIdentityProvidersResponseContent:
         """
-        List the identity providers associated with this organization.
+        Retrieve a list of all Identity Providers for this Organization.
 
         Parameters
         ----------
@@ -70,7 +70,7 @@ class IdentityProvidersClient:
         self, *, request: CreateIdentityProviderRequestContent, request_options: typing.Optional[RequestOptions] = None
     ) -> CreateIdentityProviderResponseContent:
         """
-        Create an identity provider associated with this organization.
+        Create a new Identity Provider for this Organization.
 
         Parameters
         ----------
@@ -116,7 +116,7 @@ class IdentityProvidersClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> GetIdentityProviderResponseContent:
         """
-        Retrieve the details for one particular identity-provider.
+        Retrieve details of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -146,7 +146,7 @@ class IdentityProvidersClient:
 
     def delete(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        Delete an identity provider from this organization.
+        Delete an Identity Provider specified by ID from this Organization. This will remove the association and delete the underlying Identity Provider. Members will no longer be able to authenticate using this Identity Provider.
 
         Parameters
         ----------
@@ -181,7 +181,7 @@ class IdentityProvidersClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UpdateIdentityProviderResponseContent:
         """
-        Update an identity provider associated with this organization.
+        Update the details of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -231,7 +231,7 @@ class IdentityProvidersClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetIdentityProviderResponseContent:
         """
-        Triggers a refresh of attribute mappings on the identity provider by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+        Refresh the attribute mapping for an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 
         Parameters
         ----------
@@ -264,7 +264,7 @@ class IdentityProvidersClient:
 
     def detach(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        Delete underlying identity provider from this organization.
+        Remove an Identity Provider specified by ID from this Organization. This only removes the association; the underlying Identity Provider is not deleted. Members will no longer be able to authenticate using this Identity Provider.
 
         Parameters
         ----------
@@ -330,7 +330,7 @@ class AsyncIdentityProvidersClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ListIdentityProvidersResponseContent:
         """
-        List the identity providers associated with this organization.
+        Retrieve a list of all Identity Providers for this Organization.
 
         Parameters
         ----------
@@ -366,7 +366,7 @@ class AsyncIdentityProvidersClient:
         self, *, request: CreateIdentityProviderRequestContent, request_options: typing.Optional[RequestOptions] = None
     ) -> CreateIdentityProviderResponseContent:
         """
-        Create an identity provider associated with this organization.
+        Create a new Identity Provider for this Organization.
 
         Parameters
         ----------
@@ -420,7 +420,7 @@ class AsyncIdentityProvidersClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> GetIdentityProviderResponseContent:
         """
-        Retrieve the details for one particular identity-provider.
+        Retrieve details of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -458,7 +458,7 @@ class AsyncIdentityProvidersClient:
 
     async def delete(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        Delete an identity provider from this organization.
+        Delete an Identity Provider specified by ID from this Organization. This will remove the association and delete the underlying Identity Provider. Members will no longer be able to authenticate using this Identity Provider.
 
         Parameters
         ----------
@@ -501,7 +501,7 @@ class AsyncIdentityProvidersClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UpdateIdentityProviderResponseContent:
         """
-        Update an identity provider associated with this organization.
+        Update the details of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -559,7 +559,7 @@ class AsyncIdentityProvidersClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetIdentityProviderResponseContent:
         """
-        Triggers a refresh of attribute mappings on the identity provider by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+        Refresh the attribute mapping for an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 
         Parameters
         ----------
@@ -600,7 +600,7 @@ class AsyncIdentityProvidersClient:
 
     async def detach(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        Delete underlying identity provider from this organization.
+        Remove an Identity Provider specified by ID from this Organization. This only removes the association; the underlying Identity Provider is not deleted. Members will no longer be able to authenticate using this Identity Provider.
 
         Parameters
         ----------

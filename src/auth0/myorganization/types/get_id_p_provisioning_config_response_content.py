@@ -9,8 +9,8 @@ from .idp_provisioning_config import IdpProvisioningConfig
 
 
 class GetIdPProvisioningConfigResponseContent(IdpProvisioningConfig):
-    created_at: typing.Optional[dt.datetime] = None
-    updated_on: typing.Optional[dt.datetime] = None
+    created_at: dt.datetime
+    updated_on: dt.datetime
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

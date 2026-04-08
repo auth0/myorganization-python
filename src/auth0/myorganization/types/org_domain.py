@@ -11,8 +11,8 @@ from .org_id import OrgId
 
 
 class OrgDomain(UniversalBaseModel):
-    id: typing.Optional[OrgDomainId] = None
-    org_id: typing.Optional[OrgId] = None
+    id: OrgDomainId
+    org_id: OrgId
     domain: OrgDomainName
     status: OrgDomainStatusEnum
     verification_txt: str = pydantic.Field()

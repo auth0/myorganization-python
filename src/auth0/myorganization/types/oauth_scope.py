@@ -30,6 +30,7 @@ OauthScope = typing.Union[
         "delete:my_org:member_invitations",
         "read:my_org:members",
         "delete:my_org:members",
+        "delete:my_org:memberships",
         "read:my_org:member_roles",
         "create:my_org:member_roles",
         "update:my_org:member_roles",
