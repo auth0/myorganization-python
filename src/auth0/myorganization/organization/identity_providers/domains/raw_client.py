@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ....core.api_error import ApiError
 from ....core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ....core.http_response import AsyncHttpResponse, HttpResponse
-from ....core.jsonable_encoder import jsonable_encoder
+from ....core.jsonable_encoder import encode_path_param
+from ....core.parse_error import ParsingError
 from ....core.pydantic_utilities import parse_obj_as
 from ....core.request_options import RequestOptions
 from ....errors.bad_request_error import BadRequestError
@@ -19,6 +20,7 @@ from ....types.create_idp_domain_response_content import CreateIdpDomainResponse
 from ....types.error_response_content import ErrorResponseContent
 from ....types.idp_id import IdpId
 from ....types.org_domain_name import OrgDomainName
+from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -32,7 +34,7 @@ class RawDomainsClient:
         self, idp_id: IdpId, *, domain: OrgDomainName, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[CreateIdpDomainResponseContent]:
         """
-        Add a domain to the identity provider's list of domains for [Home Realm Discovery (HRD)](https://auth0.com/docs/get-started/architecture-scenarios/business-to-business/authentication#home-realm-discovery). The domain passed must be claimed and verified by this organization.
+        Associate a domain with an Identity Provider specified by ID for this Organization. The domain must be claimed and verified.
 
         Parameters
         ----------
@@ -49,7 +51,7 @@ class RawDomainsClient:
             Domain successfully associated with identity provider.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/domains",
+            f"identity-providers/{encode_path_param(idp_id)}/domains",
             method="POST",
             json={
                 "domain": domain,
@@ -139,13 +141,17 @@ class RawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete(
         self, idp_id: IdpId, domain: OrgDomainName, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[None]:
         """
-        Remove a domain from an identity provider.
+        Remove a domain specified by name from an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -161,7 +167,7 @@ class RawDomainsClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/domains/{jsonable_encoder(domain)}",
+            f"identity-providers/{encode_path_param(idp_id)}/domains/{encode_path_param(domain)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -226,6 +232,10 @@ class RawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
@@ -237,7 +247,7 @@ class AsyncRawDomainsClient:
         self, idp_id: IdpId, *, domain: OrgDomainName, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[CreateIdpDomainResponseContent]:
         """
-        Add a domain to the identity provider's list of domains for [Home Realm Discovery (HRD)](https://auth0.com/docs/get-started/architecture-scenarios/business-to-business/authentication#home-realm-discovery). The domain passed must be claimed and verified by this organization.
+        Associate a domain with an Identity Provider specified by ID for this Organization. The domain must be claimed and verified.
 
         Parameters
         ----------
@@ -254,7 +264,7 @@ class AsyncRawDomainsClient:
             Domain successfully associated with identity provider.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/domains",
+            f"identity-providers/{encode_path_param(idp_id)}/domains",
             method="POST",
             json={
                 "domain": domain,
@@ -344,13 +354,17 @@ class AsyncRawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
         self, idp_id: IdpId, domain: OrgDomainName, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
-        Remove a domain from an identity provider.
+        Remove a domain specified by name from an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -366,7 +380,7 @@ class AsyncRawDomainsClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/domains/{jsonable_encoder(domain)}",
+            f"identity-providers/{encode_path_param(idp_id)}/domains/{encode_path_param(domain)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -431,4 +445,8 @@ class AsyncRawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

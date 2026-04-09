@@ -8,7 +8,7 @@ from .idp_scim_token_base import IdpScimTokenBase
 
 
 class IdpScimTokenCreate(IdpScimTokenBase):
-    token: typing.Optional[str] = pydantic.Field(default=None)
+    token: str = pydantic.Field()
     """
     The SCIM client's token.
     """

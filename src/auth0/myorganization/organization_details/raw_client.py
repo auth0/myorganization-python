@@ -6,6 +6,7 @@ from json.decoder import JSONDecodeError
 from ..core.api_error import ApiError
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.http_response import AsyncHttpResponse, HttpResponse
+from ..core.parse_error import ParsingError
 from ..core.pydantic_utilities import parse_obj_as
 from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
@@ -17,8 +18,8 @@ from ..errors.unauthorized_error import UnauthorizedError
 from ..types.error_response_content import ErrorResponseContent
 from ..types.get_organization_details_response_content import GetOrganizationDetailsResponseContent
 from ..types.org_branding import OrgBranding
-from ..types.org_id import OrgId
 from ..types.update_organization_details_response_content import UpdateOrganizationDetailsResponseContent
+from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -32,7 +33,7 @@ class RawOrganizationDetailsClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[GetOrganizationDetailsResponseContent]:
         """
-        Retrieve details for an Organization.
+        Retrieve details for this Organization, including display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 
         Parameters
         ----------
@@ -106,24 +107,25 @@ class RawOrganizationDetailsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def update(
         self,
         *,
-        id: typing.Optional[OrgId] = OMIT,
         name: typing.Optional[str] = OMIT,
         display_name: typing.Optional[str] = OMIT,
         branding: typing.Optional[OrgBranding] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[UpdateOrganizationDetailsResponseContent]:
         """
-        Update the details of a specific Organization, such as display name and branding options.
+        Update details for this Organization, such as display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 
         Parameters
         ----------
-        id : typing.Optional[OrgId]
-
         name : typing.Optional[str]
             The name of this organization.
 
@@ -144,7 +146,6 @@ class RawOrganizationDetailsClient:
             "details",
             method="PATCH",
             json={
-                "id": id,
                 "name": name,
                 "display_name": display_name,
                 "branding": convert_and_respect_annotation_metadata(
@@ -225,6 +226,10 @@ class RawOrganizationDetailsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
@@ -236,7 +241,7 @@ class AsyncRawOrganizationDetailsClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[GetOrganizationDetailsResponseContent]:
         """
-        Retrieve details for an Organization.
+        Retrieve details for this Organization, including display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 
         Parameters
         ----------
@@ -310,24 +315,25 @@ class AsyncRawOrganizationDetailsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def update(
         self,
         *,
-        id: typing.Optional[OrgId] = OMIT,
         name: typing.Optional[str] = OMIT,
         display_name: typing.Optional[str] = OMIT,
         branding: typing.Optional[OrgBranding] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[UpdateOrganizationDetailsResponseContent]:
         """
-        Update the details of a specific Organization, such as display name and branding options.
+        Update details for this Organization, such as display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 
         Parameters
         ----------
-        id : typing.Optional[OrgId]
-
         name : typing.Optional[str]
             The name of this organization.
 
@@ -348,7 +354,6 @@ class AsyncRawOrganizationDetailsClient:
             "details",
             method="PATCH",
             json={
-                "id": id,
                 "name": name,
                 "display_name": display_name,
                 "branding": convert_and_respect_annotation_metadata(
@@ -429,4 +434,8 @@ class AsyncRawOrganizationDetailsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

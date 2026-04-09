@@ -8,7 +8,7 @@ from .idp_id import IdpId
 
 
 class DomainIdp(UniversalBaseModel):
-    id: typing.Optional[IdpId] = None
+    id: IdpId
     name: str = pydantic.Field()
     """
     The name of the identity provider

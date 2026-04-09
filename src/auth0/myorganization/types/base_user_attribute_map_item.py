@@ -7,7 +7,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
 class BaseUserAttributeMapItem(UniversalBaseModel):
-    user_attribute: str = pydantic.Field()
+    user_attribute: typing.Optional[str] = pydantic.Field(default=None)
     """
     The name of the user attribute.
     """
@@ -34,7 +34,7 @@ class BaseUserAttributeMapItem(UniversalBaseModel):
 
     is_missing: bool = pydantic.Field()
     """
-    Indicates whether this attribute is expected but not provided by the admin defined schema. The property will   be added when a refresh operation is performed.
+    Indicates whether this attribute is expected but not provided by the admin defined schema. The property will be added when a refresh operation is performed.
     """
 
     if IS_PYDANTIC_V2:

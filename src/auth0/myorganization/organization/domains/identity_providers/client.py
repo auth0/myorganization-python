@@ -28,7 +28,7 @@ class IdentityProvidersClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ListDomainIdentityProvidersResponseContent:
         """
-        Retrieve the list of identity providers that have a specific organization domain alias.
+        Retrieve the list of Identity Providers associated with a domain specified by ID for this Organization.
 
         Parameters
         ----------
@@ -76,7 +76,7 @@ class AsyncIdentityProvidersClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ListDomainIdentityProvidersResponseContent:
         """
-        Retrieve the list of identity providers that have a specific organization domain alias.
+        Retrieve the list of Identity Providers associated with a domain specified by ID for this Organization.
 
         Parameters
         ----------

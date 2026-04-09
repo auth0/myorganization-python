@@ -5,18 +5,13 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2
-from .org_member_id import OrgMemberId
+from .org_member_id_read_only import OrgMemberIdReadOnly
 from .org_member_role import OrgMemberRole
 from .user_attributes import UserAttributes
 
 
 class OrgMember(UserAttributes):
-    user_id: typing.Optional[OrgMemberId] = None
-    is_guest: typing.Optional[bool] = pydantic.Field(default=None)
-    """
-    Is member a guest.
-    """
-
+    user_id: typing.Optional[OrgMemberIdReadOnly] = None
     roles: typing.Optional[typing.List[OrgMemberRole]] = None
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """

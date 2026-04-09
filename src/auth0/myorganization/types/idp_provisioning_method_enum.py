@@ -2,4 +2,4 @@
 
 import typing
 
-IdpProvisioningMethodEnum = typing.Union[typing.Literal["google-sync", "none", "scim"], typing.Any]
+IdpProvisioningMethodEnum = typing.Union[typing.Literal["none", "scim"], typing.Any]

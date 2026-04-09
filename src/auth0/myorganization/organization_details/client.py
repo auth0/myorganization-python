@@ -6,7 +6,6 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.get_organization_details_response_content import GetOrganizationDetailsResponseContent
 from ..types.org_branding import OrgBranding
-from ..types.org_id import OrgId
 from ..types.update_organization_details_response_content import UpdateOrganizationDetailsResponseContent
 from .raw_client import AsyncRawOrganizationDetailsClient, RawOrganizationDetailsClient
 
@@ -31,7 +30,7 @@ class OrganizationDetailsClient:
 
     def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> GetOrganizationDetailsResponseContent:
         """
-        Retrieve details for an Organization.
+        Retrieve details for this Organization, including display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 
         Parameters
         ----------
@@ -58,19 +57,16 @@ class OrganizationDetailsClient:
     def update(
         self,
         *,
-        id: typing.Optional[OrgId] = OMIT,
         name: typing.Optional[str] = OMIT,
         display_name: typing.Optional[str] = OMIT,
         branding: typing.Optional[OrgBranding] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UpdateOrganizationDetailsResponseContent:
         """
-        Update the details of a specific Organization, such as display name and branding options.
+        Update details for this Organization, such as display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 
         Parameters
         ----------
-        id : typing.Optional[OrgId]
-
         name : typing.Optional[str]
             The name of this organization.
 
@@ -107,7 +103,7 @@ class OrganizationDetailsClient:
         )
         """
         _response = self._raw_client.update(
-            id=id, name=name, display_name=display_name, branding=branding, request_options=request_options
+            name=name, display_name=display_name, branding=branding, request_options=request_options
         )
         return _response.data
 
@@ -131,7 +127,7 @@ class AsyncOrganizationDetailsClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> GetOrganizationDetailsResponseContent:
         """
-        Retrieve details for an Organization.
+        Retrieve details for this Organization, including display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 
         Parameters
         ----------
@@ -166,19 +162,16 @@ class AsyncOrganizationDetailsClient:
     async def update(
         self,
         *,
-        id: typing.Optional[OrgId] = OMIT,
         name: typing.Optional[str] = OMIT,
         display_name: typing.Optional[str] = OMIT,
         branding: typing.Optional[OrgBranding] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UpdateOrganizationDetailsResponseContent:
         """
-        Update the details of a specific Organization, such as display name and branding options.
+        Update details for this Organization, such as display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 
         Parameters
         ----------
-        id : typing.Optional[OrgId]
-
         name : typing.Optional[str]
             The name of this organization.
 
@@ -223,6 +216,6 @@ class AsyncOrganizationDetailsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            id=id, name=name, display_name=display_name, branding=branding, request_options=request_options
+            name=name, display_name=display_name, branding=branding, request_options=request_options
         )
         return _response.data

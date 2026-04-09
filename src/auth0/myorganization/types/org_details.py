@@ -5,11 +5,9 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .org_branding import OrgBranding
-from .org_id import OrgId
 
 
 class OrgDetails(UniversalBaseModel):
-    id: typing.Optional[OrgId] = None
     name: typing.Optional[str] = pydantic.Field(default=None)
     """
     The name of this organization.

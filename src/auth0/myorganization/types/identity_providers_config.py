@@ -4,7 +4,6 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .identity_providers_config_domain_alias import IdentityProvidersConfigDomainAlias
 from .identity_providers_config_organization import IdentityProvidersConfigOrganization
 from .identity_providers_config_strategy_override import IdentityProvidersConfigStrategyOverride
 
@@ -12,7 +11,6 @@ from .identity_providers_config_strategy_override import IdentityProvidersConfig
 class IdentityProvidersConfig(UniversalBaseModel):
     organization: IdentityProvidersConfigOrganization
     strategies: IdentityProvidersConfigStrategyOverride
-    domain_aliases_config: IdentityProvidersConfigDomainAlias
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

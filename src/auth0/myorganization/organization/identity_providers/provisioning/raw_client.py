@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ....core.api_error import ApiError
 from ....core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ....core.http_response import AsyncHttpResponse, HttpResponse
-from ....core.jsonable_encoder import jsonable_encoder
+from ....core.jsonable_encoder import encode_path_param
+from ....core.parse_error import ParsingError
 from ....core.pydantic_utilities import parse_obj_as
 from ....core.request_options import RequestOptions
 from ....errors.bad_request_error import BadRequestError
@@ -18,6 +19,7 @@ from ....types.create_id_p_provisioning_config_response_content import CreateIdP
 from ....types.error_response_content import ErrorResponseContent
 from ....types.get_id_p_provisioning_config_response_content import GetIdPProvisioningConfigResponseContent
 from ....types.idp_id import IdpId
+from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -31,7 +33,7 @@ class RawProvisioningClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[GetIdPProvisioningConfigResponseContent]:
         """
-        Retrieve the Provisioning configuration for this identity provider.
+        Retrieve the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -46,7 +48,7 @@ class RawProvisioningClient:
             Provisioning config successfully retrieved.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
             method="GET",
             request_options=request_options,
         )
@@ -118,13 +120,17 @@ class RawProvisioningClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def create(
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[CreateIdPProvisioningConfigResponseContent]:
         """
-        Create the Provisioning configuration for this identity provider.
+        Create a new Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -139,7 +145,7 @@ class RawProvisioningClient:
             Provisioning configuration successfully created.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
             method="POST",
             request_options=request_options,
         )
@@ -211,11 +217,15 @@ class RawProvisioningClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
         """
-        Delete the Provisioning configuration for an identity provider.
+        Delete the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -229,7 +239,7 @@ class RawProvisioningClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
             method="DELETE",
             request_options=request_options,
         )
@@ -294,6 +304,10 @@ class RawProvisioningClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def update_attributes(
@@ -304,7 +318,7 @@ class RawProvisioningClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GetIdPProvisioningConfigResponseContent]:
         """
-        Triggers a refresh of attribute mappings on the provisioning configuration by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+        Refresh the attribute mapping for the Provisioning Configuration of an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 
         Parameters
         ----------
@@ -321,7 +335,7 @@ class RawProvisioningClient:
             Provisioning config successfully retrieved.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning/update-attributes",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning/update-attributes",
             method="PUT",
             json=request,
             headers={
@@ -398,6 +412,10 @@ class RawProvisioningClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
@@ -409,7 +427,7 @@ class AsyncRawProvisioningClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]:
         """
-        Retrieve the Provisioning configuration for this identity provider.
+        Retrieve the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -424,7 +442,7 @@ class AsyncRawProvisioningClient:
             Provisioning config successfully retrieved.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
             method="GET",
             request_options=request_options,
         )
@@ -496,13 +514,17 @@ class AsyncRawProvisioningClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def create(
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[CreateIdPProvisioningConfigResponseContent]:
         """
-        Create the Provisioning configuration for this identity provider.
+        Create a new Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -517,7 +539,7 @@ class AsyncRawProvisioningClient:
             Provisioning configuration successfully created.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
             method="POST",
             request_options=request_options,
         )
@@ -589,13 +611,17 @@ class AsyncRawProvisioningClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
-        Delete the Provisioning configuration for an identity provider.
+        Delete the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -609,7 +635,7 @@ class AsyncRawProvisioningClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
             method="DELETE",
             request_options=request_options,
         )
@@ -674,6 +700,10 @@ class AsyncRawProvisioningClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def update_attributes(
@@ -684,7 +714,7 @@ class AsyncRawProvisioningClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]:
         """
-        Triggers a refresh of attribute mappings on the provisioning configuration by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+        Refresh the attribute mapping for the Provisioning Configuration of an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 
         Parameters
         ----------
@@ -701,7 +731,7 @@ class AsyncRawProvisioningClient:
             Provisioning config successfully retrieved.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning/update-attributes",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning/update-attributes",
             method="PUT",
             json=request,
             headers={
@@ -778,4 +808,8 @@ class AsyncRawProvisioningClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

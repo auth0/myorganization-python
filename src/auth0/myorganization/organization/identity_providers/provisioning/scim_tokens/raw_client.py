@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from .....core.api_error import ApiError
 from .....core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .....core.http_response import AsyncHttpResponse, HttpResponse
-from .....core.jsonable_encoder import jsonable_encoder
+from .....core.jsonable_encoder import encode_path_param
+from .....core.parse_error import ParsingError
 from .....core.pydantic_utilities import parse_obj_as
 from .....core.request_options import RequestOptions
 from .....errors.bad_request_error import BadRequestError
@@ -19,6 +20,7 @@ from .....types.error_response_content import ErrorResponseContent
 from .....types.idp_id import IdpId
 from .....types.idp_provisioning_scim_token_id import IdpProvisioningScimTokenId
 from .....types.list_idp_provisioning_scim_tokens_response_content import ListIdpProvisioningScimTokensResponseContent
+from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -32,7 +34,7 @@ class RawScimTokensClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[ListIdpProvisioningScimTokensResponseContent]:
         """
-        List the Provisioning SCIM tokens for this identity provider.
+        Retrieve a list of [SCIM tokens](https://auth0.com/docs/authenticate/protocols/scim/configure-inbound-scim#scim-endpoints-and-tokens) for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -47,7 +49,7 @@ class RawScimTokensClient:
             List Provisioning SCIM tokens for an identity provider.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning/scim-tokens",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning/scim-tokens",
             method="GET",
             request_options=request_options,
         )
@@ -119,6 +121,10 @@ class RawScimTokensClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def create(
@@ -129,7 +135,7 @@ class RawScimTokensClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[CreateIdpProvisioningScimTokenResponseContent]:
         """
-        Create a Provisioning SCIM token for this identity provider.
+        Create a new SCIM token for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -147,7 +153,7 @@ class RawScimTokensClient:
             Provisioning SCIM token successfully created.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning/scim-tokens",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning/scim-tokens",
             method="POST",
             json={
                 "token_lifetime": token_lifetime,
@@ -226,6 +232,10 @@ class RawScimTokensClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete(
@@ -236,7 +246,7 @@ class RawScimTokensClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[None]:
         """
-        Delete a Provisioning SCIM configuration for an identity provider.
+        Revoke a SCIM token specified by token ID for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -252,7 +262,7 @@ class RawScimTokensClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning/scim-tokens/{jsonable_encoder(idp_scim_token_id)}",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning/scim-tokens/{encode_path_param(idp_scim_token_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -317,6 +327,10 @@ class RawScimTokensClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
@@ -328,7 +342,7 @@ class AsyncRawScimTokensClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[ListIdpProvisioningScimTokensResponseContent]:
         """
-        List the Provisioning SCIM tokens for this identity provider.
+        Retrieve a list of [SCIM tokens](https://auth0.com/docs/authenticate/protocols/scim/configure-inbound-scim#scim-endpoints-and-tokens) for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -343,7 +357,7 @@ class AsyncRawScimTokensClient:
             List Provisioning SCIM tokens for an identity provider.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning/scim-tokens",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning/scim-tokens",
             method="GET",
             request_options=request_options,
         )
@@ -415,6 +429,10 @@ class AsyncRawScimTokensClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def create(
@@ -425,7 +443,7 @@ class AsyncRawScimTokensClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[CreateIdpProvisioningScimTokenResponseContent]:
         """
-        Create a Provisioning SCIM token for this identity provider.
+        Create a new SCIM token for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -443,7 +461,7 @@ class AsyncRawScimTokensClient:
             Provisioning SCIM token successfully created.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning/scim-tokens",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning/scim-tokens",
             method="POST",
             json={
                 "token_lifetime": token_lifetime,
@@ -522,6 +540,10 @@ class AsyncRawScimTokensClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
@@ -532,7 +554,7 @@ class AsyncRawScimTokensClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[None]:
         """
-        Delete a Provisioning SCIM configuration for an identity provider.
+        Revoke a SCIM token specified by token ID for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -548,7 +570,7 @@ class AsyncRawScimTokensClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/provisioning/scim-tokens/{jsonable_encoder(idp_scim_token_id)}",
+            f"identity-providers/{encode_path_param(idp_id)}/provisioning/scim-tokens/{encode_path_param(idp_scim_token_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -613,4 +635,8 @@ class AsyncRawScimTokensClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
