@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Callable, Dict, Optional, Union
 
 import httpx
 from .client import AsyncAuth0, Auth0
-from .token_provider import TokenProvider
+from .token_provider import AsyncTokenProvider, TokenProvider
 
 if TYPE_CHECKING:
     from .organization.client import AsyncOrganizationClient, OrganizationClient
@@ -190,29 +190,32 @@ class AsyncMyOrganizationClient:
             raise ValueError("Either 'token' or both 'client_id' and 'client_secret' must be provided")
 
         # Create token supplier
-        # Note: AsyncAuth0 expects a sync callable for token, so we use
-        # the sync TokenProvider. This is safe because httpx sync calls work
-        # in async contexts.
         if has_credentials and not has_token:
-            provider = TokenProvider(
+            async_provider = AsyncTokenProvider(
                 domain=domain,
                 client_id=client_id,  # type: ignore[arg-type]
                 client_secret=client_secret,  # type: ignore[arg-type]
                 audience=audience,
                 organization=organization,
             )
-            resolved_token: Union[str, Callable[[], str]] = provider.get_token
+            # Use async_token so token acquisition doesn't block the event loop
+            self._api = AsyncAuth0(
+                base_url=f"https://{domain}/my-org",
+                token="",
+                async_token=async_provider.get_token,
+                headers=headers,
+                timeout=timeout,
+                httpx_client=httpx_client,
+            )
         else:
-            resolved_token = token  # type: ignore[assignment]
-
-        # Create underlying client
-        self._api = AsyncAuth0(
-            base_url=f"https://{domain}/my-org",
-            token=resolved_token,
-            headers=headers,
-            timeout=timeout,
-            httpx_client=httpx_client,
-        )
+            resolved_token: Union[str, Callable[[], str]] = token  # type: ignore[assignment]
+            self._api = AsyncAuth0(
+                base_url=f"https://{domain}/my-org",
+                token=resolved_token,
+                headers=headers,
+                timeout=timeout,
+                httpx_client=httpx_client,
+            )
 
     # Forward sub-client properties
     @property
