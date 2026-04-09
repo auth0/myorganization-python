@@ -85,11 +85,6 @@ ignore = [
 [tool.ruff.lint.isort]
 section-order = ["future", "standard-library", "third-party", "first-party"]
 
-[tool.poetry-dynamic-versioning]
-enable = true
-style = "pep440"
-vcs = "none"
-
 [build-system]
-requires = ["poetry-core", "poetry-dynamic-versioning>=1.0.0,<2.0.0"]
-build-backend = "poetry_dynamic_versioning.backend"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
