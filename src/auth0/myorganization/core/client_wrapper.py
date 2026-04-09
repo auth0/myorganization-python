@@ -29,7 +29,7 @@ class BaseClientWrapper:
     def get_headers(self) -> typing.Dict[str, str]:
         # Dynamically get version from package metadata
         py_version = platform.python_version()
-        version = sys.modules["auth0"].myorganization.__version__
+        version = sys.modules["auth0"].__version__
 
         # Build Auth0 telemetry in standard format
         auth0_client = dumps({

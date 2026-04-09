@@ -23,7 +23,7 @@
 
 This library supports the following tooling versions:
 
-- Python >= 3.8
+- Python >= 3.9
 
 ### Installation
 
