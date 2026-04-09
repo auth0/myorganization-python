@@ -38,7 +38,7 @@ class ProvisioningClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> GetIdPProvisioningConfigResponseContent:
         """
-        Retrieve the Provisioning configuration for this identity provider.
+        Retrieve the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -70,7 +70,7 @@ class ProvisioningClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> CreateIdPProvisioningConfigResponseContent:
         """
-        Create the Provisioning configuration for this identity provider.
+        Create a new Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -100,7 +100,7 @@ class ProvisioningClient:
 
     def delete(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        Delete the Provisioning configuration for an identity provider.
+        Delete the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -135,7 +135,7 @@ class ProvisioningClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetIdPProvisioningConfigResponseContent:
         """
-        Triggers a refresh of attribute mappings on the provisioning configuration by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+        Refresh the attribute mapping for the Provisioning Configuration of an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 
         Parameters
         ----------
@@ -196,7 +196,7 @@ class AsyncProvisioningClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> GetIdPProvisioningConfigResponseContent:
         """
-        Retrieve the Provisioning configuration for this identity provider.
+        Retrieve the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -236,7 +236,7 @@ class AsyncProvisioningClient:
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> CreateIdPProvisioningConfigResponseContent:
         """
-        Create the Provisioning configuration for this identity provider.
+        Create a new Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -274,7 +274,7 @@ class AsyncProvisioningClient:
 
     async def delete(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        Delete the Provisioning configuration for an identity provider.
+        Delete the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -317,7 +317,7 @@ class AsyncProvisioningClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> GetIdPProvisioningConfigResponseContent:
         """
-        Triggers a refresh of attribute mappings on the provisioning configuration by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+        Refresh the attribute mapping for the Provisioning Configuration of an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 
         Parameters
         ----------

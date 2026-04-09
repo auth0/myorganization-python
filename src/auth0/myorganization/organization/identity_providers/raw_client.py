@@ -6,7 +6,8 @@ from json.decoder import JSONDecodeError
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
-from ...core.jsonable_encoder import jsonable_encoder
+from ...core.jsonable_encoder import encode_path_param
+from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
 from ...core.serialization import convert_and_respect_annotation_metadata
@@ -24,6 +25,7 @@ from ...types.idp_id import IdpId
 from ...types.list_identity_providers_response_content import ListIdentityProvidersResponseContent
 from ...types.update_identity_provider_request_content import UpdateIdentityProviderRequestContent
 from ...types.update_identity_provider_response_content import UpdateIdentityProviderResponseContent
+from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -37,7 +39,7 @@ class RawIdentityProvidersClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[ListIdentityProvidersResponseContent]:
         """
-        List the identity providers associated with this organization.
+        Retrieve a list of all Identity Providers for this Organization.
 
         Parameters
         ----------
@@ -111,13 +113,17 @@ class RawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def create(
         self, *, request: CreateIdentityProviderRequestContent, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[CreateIdentityProviderResponseContent]:
         """
-        Create an identity provider associated with this organization.
+        Create a new Identity Provider for this Organization.
 
         Parameters
         ----------
@@ -222,13 +228,17 @@ class RawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get(
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[GetIdentityProviderResponseContent]:
         """
-        Retrieve the details for one particular identity-provider.
+        Retrieve details of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -243,7 +253,7 @@ class RawIdentityProvidersClient:
             Identity provider successfully retrieved.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}",
+            f"identity-providers/{encode_path_param(idp_id)}",
             method="GET",
             request_options=request_options,
         )
@@ -315,11 +325,15 @@ class RawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
         """
-        Delete an identity provider from this organization.
+        Delete an Identity Provider specified by ID from this Organization. This will remove the association and delete the underlying Identity Provider. Members will no longer be able to authenticate using this Identity Provider.
 
         Parameters
         ----------
@@ -333,7 +347,7 @@ class RawIdentityProvidersClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}",
+            f"identity-providers/{encode_path_param(idp_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -398,6 +412,10 @@ class RawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def update(
@@ -408,7 +426,7 @@ class RawIdentityProvidersClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[UpdateIdentityProviderResponseContent]:
         """
-        Update an identity provider associated with this organization.
+        Update the details of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -425,7 +443,7 @@ class RawIdentityProvidersClient:
             Identity provider successfully updated.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}",
+            f"identity-providers/{encode_path_param(idp_id)}",
             method="PATCH",
             json=convert_and_respect_annotation_metadata(
                 object_=request, annotation=UpdateIdentityProviderRequestContent, direction="write"
@@ -504,6 +522,10 @@ class RawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def update_attributes(
@@ -514,7 +536,7 @@ class RawIdentityProvidersClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[GetIdentityProviderResponseContent]:
         """
-        Triggers a refresh of attribute mappings on the identity provider by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+        Refresh the attribute mapping for an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 
         Parameters
         ----------
@@ -531,7 +553,7 @@ class RawIdentityProvidersClient:
             Identity provider successfully retrieved.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/update-attributes",
+            f"identity-providers/{encode_path_param(idp_id)}/update-attributes",
             method="PUT",
             json=request,
             headers={
@@ -608,11 +630,15 @@ class RawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def detach(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
         """
-        Delete underlying identity provider from this organization.
+        Remove an Identity Provider specified by ID from this Organization. This only removes the association; the underlying Identity Provider is not deleted. Members will no longer be able to authenticate using this Identity Provider.
 
         Parameters
         ----------
@@ -626,7 +652,7 @@ class RawIdentityProvidersClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/detach",
+            f"identity-providers/{encode_path_param(idp_id)}/detach",
             method="POST",
             request_options=request_options,
         )
@@ -691,6 +717,10 @@ class RawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
@@ -702,7 +732,7 @@ class AsyncRawIdentityProvidersClient:
         self, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[ListIdentityProvidersResponseContent]:
         """
-        List the identity providers associated with this organization.
+        Retrieve a list of all Identity Providers for this Organization.
 
         Parameters
         ----------
@@ -776,13 +806,17 @@ class AsyncRawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def create(
         self, *, request: CreateIdentityProviderRequestContent, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[CreateIdentityProviderResponseContent]:
         """
-        Create an identity provider associated with this organization.
+        Create a new Identity Provider for this Organization.
 
         Parameters
         ----------
@@ -887,13 +921,17 @@ class AsyncRawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get(
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[GetIdentityProviderResponseContent]:
         """
-        Retrieve the details for one particular identity-provider.
+        Retrieve details of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -908,7 +946,7 @@ class AsyncRawIdentityProvidersClient:
             Identity provider successfully retrieved.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}",
+            f"identity-providers/{encode_path_param(idp_id)}",
             method="GET",
             request_options=request_options,
         )
@@ -980,13 +1018,17 @@ class AsyncRawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
-        Delete an identity provider from this organization.
+        Delete an Identity Provider specified by ID from this Organization. This will remove the association and delete the underlying Identity Provider. Members will no longer be able to authenticate using this Identity Provider.
 
         Parameters
         ----------
@@ -1000,7 +1042,7 @@ class AsyncRawIdentityProvidersClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}",
+            f"identity-providers/{encode_path_param(idp_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -1065,6 +1107,10 @@ class AsyncRawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def update(
@@ -1075,7 +1121,7 @@ class AsyncRawIdentityProvidersClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[UpdateIdentityProviderResponseContent]:
         """
-        Update an identity provider associated with this organization.
+        Update the details of an Identity Provider specified by ID for this Organization.
 
         Parameters
         ----------
@@ -1092,7 +1138,7 @@ class AsyncRawIdentityProvidersClient:
             Identity provider successfully updated.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}",
+            f"identity-providers/{encode_path_param(idp_id)}",
             method="PATCH",
             json=convert_and_respect_annotation_metadata(
                 object_=request, annotation=UpdateIdentityProviderRequestContent, direction="write"
@@ -1171,6 +1217,10 @@ class AsyncRawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def update_attributes(
@@ -1181,7 +1231,7 @@ class AsyncRawIdentityProvidersClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[GetIdentityProviderResponseContent]:
         """
-        Triggers a refresh of attribute mappings on the identity provider by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+        Refresh the attribute mapping for an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 
         Parameters
         ----------
@@ -1198,7 +1248,7 @@ class AsyncRawIdentityProvidersClient:
             Identity provider successfully retrieved.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/update-attributes",
+            f"identity-providers/{encode_path_param(idp_id)}/update-attributes",
             method="PUT",
             json=request,
             headers={
@@ -1275,13 +1325,17 @@ class AsyncRawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def detach(
         self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
-        Delete underlying identity provider from this organization.
+        Remove an Identity Provider specified by ID from this Organization. This only removes the association; the underlying Identity Provider is not deleted. Members will no longer be able to authenticate using this Identity Provider.
 
         Parameters
         ----------
@@ -1295,7 +1349,7 @@ class AsyncRawIdentityProvidersClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{jsonable_encoder(idp_id)}/detach",
+            f"identity-providers/{encode_path_param(idp_id)}/detach",
             method="POST",
             request_options=request_options,
         )
@@ -1360,4 +1414,8 @@ class AsyncRawIdentityProvidersClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)

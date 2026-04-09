@@ -5,10 +5,12 @@ from __future__ import annotations
 import typing
 
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ...core.pagination import AsyncPager, SyncPager
 from ...core.request_options import RequestOptions
 from ...types.create_organization_domain_response_content import CreateOrganizationDomainResponseContent
 from ...types.get_organization_domain_response_content import GetOrganizationDomainResponseContent
 from ...types.list_organization_domains_response_content import ListOrganizationDomainsResponseContent
+from ...types.org_domain import OrgDomain
 from ...types.org_domain_id import OrgDomainId
 from ...types.org_domain_name import OrgDomainName
 from .raw_client import AsyncRawDomainsClient, RawDomainsClient
@@ -39,19 +41,29 @@ class DomainsClient:
         return self._raw_client
 
     def list(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ListOrganizationDomainsResponseContent:
+        self,
+        *,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[OrgDomain, ListOrganizationDomainsResponseContent]:
         """
-        Lists all domains pending and verified for an organization.
+        Retrieve a list of all pending and verified domains for this Organization.
 
         Parameters
         ----------
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ListOrganizationDomainsResponseContent
+        SyncPager[OrgDomain, ListOrganizationDomainsResponseContent]
             List domains for an organization.
 
         Examples
@@ -61,16 +73,23 @@ class DomainsClient:
         client = Auth0(
             token="YOUR_TOKEN",
         )
-        client.organization.domains.list()
+        response = client.organization.domains.list(
+            from_="from",
+            take=1,
+        )
+        for item in response:
+            yield item
+        # alternatively, you can paginate page-by-page
+        for page in response.iter_pages():
+            yield page
         """
-        _response = self._raw_client.list(request_options=request_options)
-        return _response.data
+        return self._raw_client.list(from_=from_, take=take, request_options=request_options)
 
     def create(
         self, *, domain: OrgDomainName, request_options: typing.Optional[RequestOptions] = None
     ) -> CreateOrganizationDomainResponseContent:
         """
-        Create a new domain for an organization.
+        Create a new domain for this Organization.
 
         Parameters
         ----------
@@ -102,7 +121,7 @@ class DomainsClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> GetOrganizationDomainResponseContent:
         """
-        Retrieve a domain for an organization.
+        Retrieve details of a domain specified by ID for this Organization.
 
         Parameters
         ----------
@@ -132,7 +151,7 @@ class DomainsClient:
 
     def delete(self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        Remove a domain from this organization.
+        Remove a domain specified by ID from this Organization.
 
         Parameters
         ----------
@@ -195,19 +214,29 @@ class AsyncDomainsClient:
         return self._raw_client
 
     async def list(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> ListOrganizationDomainsResponseContent:
+        self,
+        *,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[OrgDomain, ListOrganizationDomainsResponseContent]:
         """
-        Lists all domains pending and verified for an organization.
+        Retrieve a list of all pending and verified domains for this Organization.
 
         Parameters
         ----------
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        ListOrganizationDomainsResponseContent
+        AsyncPager[OrgDomain, ListOrganizationDomainsResponseContent]
             List domains for an organization.
 
         Examples
@@ -222,19 +251,27 @@ class AsyncDomainsClient:
 
 
         async def main() -> None:
-            await client.organization.domains.list()
+            response = await client.organization.domains.list(
+                from_="from",
+                take=1,
+            )
+            async for item in response:
+                yield item
+
+            # alternatively, you can paginate page-by-page
+            async for page in response.iter_pages():
+                yield page
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list(request_options=request_options)
-        return _response.data
+        return await self._raw_client.list(from_=from_, take=take, request_options=request_options)
 
     async def create(
         self, *, domain: OrgDomainName, request_options: typing.Optional[RequestOptions] = None
     ) -> CreateOrganizationDomainResponseContent:
         """
-        Create a new domain for an organization.
+        Create a new domain for this Organization.
 
         Parameters
         ----------
@@ -274,7 +311,7 @@ class AsyncDomainsClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> GetOrganizationDomainResponseContent:
         """
-        Retrieve a domain for an organization.
+        Retrieve details of a domain specified by ID for this Organization.
 
         Parameters
         ----------
@@ -312,7 +349,7 @@ class AsyncDomainsClient:
 
     async def delete(self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None) -> None:
         """
-        Remove a domain from this organization.
+        Remove a domain specified by ID from this Organization.
 
         Parameters
         ----------

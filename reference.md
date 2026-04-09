@@ -1,6 +1,6 @@
 # Reference
 ## OrganizationDetails
-<details><summary><code>client.organization_details.<a href="src/auth0/myorganization/organization_details/client.py">get</a>() -&gt; AsyncHttpResponse[GetOrganizationDetailsResponseContent]</code></summary>
+<details><summary><code>client.organization_details.<a href="src/auth0.myorganization/organization_details/client.py">get</a>() -> GetOrganizationDetailsResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -12,7 +12,7 @@
 <dl>
 <dd>
 
-Retrieve details for an Organization.
+Retrieve details for this Organization, including display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 </dd>
 </dl>
 </dd>
@@ -27,11 +27,14 @@ Retrieve details for an Organization.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization_details.get()
 
 ```
@@ -60,7 +63,7 @@ client.organization_details.get()
 </dl>
 </details>
 
-<details><summary><code>client.organization_details.<a href="src/auth0/myorganization/organization_details/client.py">update</a>(...) -&gt; AsyncHttpResponse[UpdateOrganizationDetailsResponseContent]</code></summary>
+<details><summary><code>client.organization_details.<a href="src/auth0.myorganization/organization_details/client.py">update</a>(...) -> UpdateOrganizationDetailsResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -72,7 +75,7 @@ client.organization_details.get()
 <dl>
 <dd>
 
-Update the details of a specific Organization, such as display name and branding options.
+Update details for this Organization, such as display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
 </dd>
 </dl>
 </dd>
@@ -87,11 +90,14 @@ Update the details of a specific Organization, such as display name and branding
 <dd>
 
 ```python
-from auth0 import Auth0, OrgBranding, OrgBrandingColors
+from auth0.myorganization import Auth0, OrgBranding, OrgBrandingColors
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization_details.update(
     name="testorg",
     display_name="Test Organization",
@@ -118,31 +124,7 @@ client.organization_details.update(
 <dl>
 <dd>
 
-**id:** `typing.Optional[OrgId]` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**name:** `typing.Optional[str]` — The name of this organization.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**display_name:** `typing.Optional[str]` — Friendly name of this organization.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**branding:** `typing.Optional[OrgBranding]` 
+**request:** `UpdateOrganizationDetailsRequestContent` 
     
 </dd>
 </dl>
@@ -163,7 +145,7 @@ client.organization_details.update(
 </details>
 
 ## Organization Configuration
-<details><summary><code>client.organization.configuration.<a href="src/auth0/myorganization/organization/configuration/client.py">get</a>() -&gt; AsyncHttpResponse[GetConfigurationResponseContent]</code></summary>
+<details><summary><code>client.organization.configuration.<a href="src/auth0.myorganization/organization/configuration/client.py">get</a>() -> GetConfigurationResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -175,7 +157,7 @@ client.organization_details.update(
 <dl>
 <dd>
 
-Retrieve the configuration for the /my-org API. This will return all stored client information with the exception of attributes that are identifiers. Identifier attributes will be given their own endpoint that will return the full object. This will give the components all of the information they will need to be successful. The SDK provider for the components should manage fetching and caching this information for all components.
+Retrieve the My Organization API configuration. Returns only the `connection_deletion_behavior` and `allowed_strategies`. Identifier attributes such as `user_attribute_profile_id` and `connection_profile_id` are not included. Cache this information, as it does not change frequently.
 </dd>
 </dl>
 </dd>
@@ -190,11 +172,14 @@ Retrieve the configuration for the /my-org API. This will return all stored clie
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.configuration.get()
 
 ```
@@ -224,7 +209,7 @@ client.organization.configuration.get()
 </details>
 
 ## Organization Domains
-<details><summary><code>client.organization.domains.<a href="src/auth0/myorganization/organization/domains/client.py">list</a>() -&gt; AsyncHttpResponse[ListOrganizationDomainsResponseContent]</code></summary>
+<details><summary><code>client.organization.domains.<a href="src/auth0.myorganization/organization/domains/client.py">list</a>(...) -> ListOrganizationDomainsResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -236,7 +221,7 @@ client.organization.configuration.get()
 <dl>
 <dd>
 
-Lists all domains pending and verified for an organization.
+Retrieve a list of all pending and verified domains for this Organization.
 </dd>
 </dl>
 </dd>
@@ -251,12 +236,18 @@ Lists all domains pending and verified for an organization.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
-client.organization.domains.list()
+
+client.organization.domains.list(
+    from_="from",
+    take=1,
+)
 
 ```
 </dd>
@@ -268,6 +259,22 @@ client.organization.domains.list()
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**from:** `typing.Optional[str]` — An optional cursor from which to start the selection (exclusive).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**take:** `typing.Optional[int]` — Number of results per page. Defaults to 50.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -284,7 +291,7 @@ client.organization.domains.list()
 </dl>
 </details>
 
-<details><summary><code>client.organization.domains.<a href="src/auth0/myorganization/organization/domains/client.py">create</a>(...) -&gt; AsyncHttpResponse[CreateOrganizationDomainResponseContent]</code></summary>
+<details><summary><code>client.organization.domains.<a href="src/auth0.myorganization/organization/domains/client.py">create</a>(...) -> CreateOrganizationDomainResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -296,7 +303,7 @@ client.organization.domains.list()
 <dl>
 <dd>
 
-Create a new domain for an organization.
+Create a new domain for this Organization.
 </dd>
 </dl>
 </dd>
@@ -311,11 +318,14 @@ Create a new domain for an organization.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.domains.create(
     domain="acme.com",
 )
@@ -354,7 +364,7 @@ client.organization.domains.create(
 </dl>
 </details>
 
-<details><summary><code>client.organization.domains.<a href="src/auth0/myorganization/organization/domains/client.py">get</a>(...) -&gt; AsyncHttpResponse[GetOrganizationDomainResponseContent]</code></summary>
+<details><summary><code>client.organization.domains.<a href="src/auth0.myorganization/organization/domains/client.py">get</a>(...) -> GetOrganizationDomainResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -366,7 +376,7 @@ client.organization.domains.create(
 <dl>
 <dd>
 
-Retrieve a domain for an organization.
+Retrieve details of a domain specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -381,11 +391,14 @@ Retrieve a domain for an organization.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.domains.get(
     domain_id="domain_id",
 )
@@ -424,7 +437,7 @@ client.organization.domains.get(
 </dl>
 </details>
 
-<details><summary><code>client.organization.domains.<a href="src/auth0/myorganization/organization/domains/client.py">delete</a>(...) -&gt; AsyncHttpResponse[None]</code></summary>
+<details><summary><code>client.organization.domains.<a href="src/auth0.myorganization/organization/domains/client.py">delete</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -436,7 +449,7 @@ client.organization.domains.get(
 <dl>
 <dd>
 
-Remove a domain from this organization.
+Remove a domain specified by ID from this Organization.
 </dd>
 </dl>
 </dd>
@@ -451,11 +464,14 @@ Remove a domain from this organization.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.domains.delete(
     domain_id="domain_id",
 )
@@ -495,7 +511,7 @@ client.organization.domains.delete(
 </details>
 
 ## Organization IdentityProviders
-<details><summary><code>client.organization.identity_providers.<a href="src/auth0/myorganization/organization/identity_providers/client.py">list</a>() -&gt; AsyncHttpResponse[ListIdentityProvidersResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.<a href="src/auth0.myorganization/organization/identity_providers/client.py">list</a>() -> ListIdentityProvidersResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -507,7 +523,7 @@ client.organization.domains.delete(
 <dl>
 <dd>
 
-List the identity providers associated with this organization.
+Retrieve a list of all Identity Providers for this Organization.
 </dd>
 </dl>
 </dd>
@@ -522,11 +538,14 @@ List the identity providers associated with this organization.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.list()
 
 ```
@@ -555,7 +574,7 @@ client.organization.identity_providers.list()
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.<a href="src/auth0/myorganization/organization/identity_providers/client.py">create</a>(...) -&gt; AsyncHttpResponse[CreateIdentityProviderResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.<a href="src/auth0.myorganization/organization/identity_providers/client.py">create</a>(...) -> CreateIdentityProviderResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -567,7 +586,7 @@ client.organization.identity_providers.list()
 <dl>
 <dd>
 
-Create an identity provider associated with this organization.
+Create a new Identity Provider for this Organization.
 </dd>
 </dl>
 </dd>
@@ -582,16 +601,21 @@ Create an identity provider associated with this organization.
 <dd>
 
 ```python
-from auth0 import Auth0, IdpOidcOptionsRequest, IdpOidcRequest
+from auth0.myorganization import Auth0, IdpOidcRequest, IdpOidcOptionsRequest
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.create(
     request=IdpOidcRequest(
         name="oidcIdp",
         strategy="oidc",
-        domains=["mydomain.com"],
+        domains=[
+            "mydomain.com"
+        ],
         display_name="OIDC IdP",
         show_as_button=True,
         assign_membership_on_login=False,
@@ -639,7 +663,7 @@ client.organization.identity_providers.create(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.<a href="src/auth0/myorganization/organization/identity_providers/client.py">get</a>(...) -&gt; AsyncHttpResponse[GetIdentityProviderResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.<a href="src/auth0.myorganization/organization/identity_providers/client.py">get</a>(...) -> GetIdentityProviderResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -651,7 +675,7 @@ client.organization.identity_providers.create(
 <dl>
 <dd>
 
-Retrieve the details for one particular identity-provider.
+Retrieve details of an Identity Provider specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -666,11 +690,14 @@ Retrieve the details for one particular identity-provider.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.get(
     idp_id="idp_id",
 )
@@ -709,7 +736,7 @@ client.organization.identity_providers.get(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.<a href="src/auth0/myorganization/organization/identity_providers/client.py">delete</a>(...) -&gt; AsyncHttpResponse[None]</code></summary>
+<details><summary><code>client.organization.identity_providers.<a href="src/auth0.myorganization/organization/identity_providers/client.py">delete</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -721,7 +748,7 @@ client.organization.identity_providers.get(
 <dl>
 <dd>
 
-Delete an identity provider from this organization.
+Delete an Identity Provider specified by ID from this Organization. This will remove the association and delete the underlying Identity Provider. Members will no longer be able to authenticate using this Identity Provider.
 </dd>
 </dl>
 </dd>
@@ -736,11 +763,14 @@ Delete an identity provider from this organization.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.delete(
     idp_id="idp_id",
 )
@@ -779,7 +809,7 @@ client.organization.identity_providers.delete(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.<a href="src/auth0/myorganization/organization/identity_providers/client.py">update</a>(...) -&gt; AsyncHttpResponse[UpdateIdentityProviderResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.<a href="src/auth0.myorganization/organization/identity_providers/client.py">update</a>(...) -> UpdateIdentityProviderResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -791,7 +821,7 @@ client.organization.identity_providers.delete(
 <dl>
 <dd>
 
-Update an identity provider associated with this organization.
+Update the details of an Identity Provider specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -806,11 +836,14 @@ Update an identity provider associated with this organization.
 <dd>
 
 ```python
-from auth0 import Auth0, IdpOidcOptionsRequest, IdpOidcUpdateRequest
+from auth0.myorganization import Auth0, IdpOidcUpdateRequest, IdpOidcOptionsRequest
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.update(
     idp_id="idp_id",
     request=IdpOidcUpdateRequest(
@@ -869,7 +902,7 @@ client.organization.identity_providers.update(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.<a href="src/auth0/myorganization/organization/identity_providers/client.py">update_attributes</a>(...) -&gt; AsyncHttpResponse[GetIdentityProviderResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.<a href="src/auth0.myorganization/organization/identity_providers/client.py">update_attributes</a>(...) -> GetIdentityProviderResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -881,7 +914,7 @@ client.organization.identity_providers.update(
 <dl>
 <dd>
 
-Triggers a refresh of attribute mappings on the identity provider by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+Refresh the attribute mapping for an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 </dd>
 </dl>
 </dd>
@@ -896,14 +929,19 @@ Triggers a refresh of attribute mappings on the identity provider by overriding 
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.update_attributes(
     idp_id="idp_id",
-    request={"key": "value"},
+    request={
+        "key": "value"
+    },
 )
 
 ```
@@ -948,7 +986,7 @@ client.organization.identity_providers.update_attributes(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.<a href="src/auth0/myorganization/organization/identity_providers/client.py">detach</a>(...) -&gt; AsyncHttpResponse[None]</code></summary>
+<details><summary><code>client.organization.identity_providers.<a href="src/auth0.myorganization/organization/identity_providers/client.py">detach</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -960,7 +998,7 @@ client.organization.identity_providers.update_attributes(
 <dl>
 <dd>
 
-Delete underlying identity provider from this organization.
+Remove an Identity Provider specified by ID from this Organization. This only removes the association; the underlying Identity Provider is not deleted. Members will no longer be able to authenticate using this Identity Provider.
 </dd>
 </dl>
 </dd>
@@ -975,11 +1013,14 @@ Delete underlying identity provider from this organization.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.detach(
     idp_id="idp_id",
 )
@@ -1019,7 +1060,7 @@ client.organization.identity_providers.detach(
 </details>
 
 ## Organization Configuration IdentityProviders
-<details><summary><code>client.organization.configuration.identity_providers.<a href="src/auth0/myorganization/organization/configuration/identity_providers/client.py">get</a>() -&gt; AsyncHttpResponse[GetIdpConfigurationResponseContent]</code></summary>
+<details><summary><code>client.organization.configuration.identity_providers.<a href="src/auth0.myorganization/organization/configuration/identity_providers/client.py">get</a>() -> GetIdpConfigurationResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1031,7 +1072,7 @@ client.organization.identity_providers.detach(
 <dl>
 <dd>
 
-Retrieve the connection profile for the application. This will give the components all of the information they will need to be successful. The SDK provider for the components should manage fetching and caching this information for all components.
+Retrieve the [Connection Profile](https://auth0.com/docs/authenticate/enterprise-connections/connection-profile) for this application. You should cache this information as it does not change frequently.
 </dd>
 </dl>
 </dd>
@@ -1046,11 +1087,14 @@ Retrieve the connection profile for the application. This will give the componen
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.configuration.identity_providers.get()
 
 ```
@@ -1080,7 +1124,7 @@ client.organization.configuration.identity_providers.get()
 </details>
 
 ## Organization Domains Verify
-<details><summary><code>client.organization.domains.verify.<a href="src/auth0/myorganization/organization/domains/verify/client.py">create</a>(...) -&gt; AsyncHttpResponse[StartOrganizationDomainVerificationResponseContent]</code></summary>
+<details><summary><code>client.organization.domains.verify.<a href="src/auth0.myorganization/organization/domains/verify/client.py">create</a>(...) -> StartOrganizationDomainVerificationResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1092,7 +1136,7 @@ client.organization.configuration.identity_providers.get()
 <dl>
 <dd>
 
-Get a verification text and start the domain verification process for a particular domain.
+Initiate the verification process for a domain specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -1107,11 +1151,14 @@ Get a verification text and start the domain verification process for a particul
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.domains.verify.create(
     domain_id="domain_id",
 )
@@ -1151,7 +1198,7 @@ client.organization.domains.verify.create(
 </details>
 
 ## Organization Domains IdentityProviders
-<details><summary><code>client.organization.domains.identity_providers.<a href="src/auth0/myorganization/organization/domains/identity_providers/client.py">get</a>(...) -&gt; AsyncHttpResponse[ListDomainIdentityProvidersResponseContent]</code></summary>
+<details><summary><code>client.organization.domains.identity_providers.<a href="src/auth0.myorganization/organization/domains/identity_providers/client.py">get</a>(...) -> ListDomainIdentityProvidersResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1163,7 +1210,7 @@ client.organization.domains.verify.create(
 <dl>
 <dd>
 
-Retrieve the list of identity providers that have a specific organization domain alias.
+Retrieve the list of Identity Providers associated with a domain specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -1178,11 +1225,14 @@ Retrieve the list of identity providers that have a specific organization domain
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.domains.identity_providers.get(
     domain_id="domain_id",
 )
@@ -1222,7 +1272,7 @@ client.organization.domains.identity_providers.get(
 </details>
 
 ## Organization IdentityProviders Domains
-<details><summary><code>client.organization.identity_providers.domains.<a href="src/auth0/myorganization/organization/identity_providers/domains/client.py">create</a>(...) -&gt; AsyncHttpResponse[CreateIdpDomainResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.domains.<a href="src/auth0.myorganization/organization/identity_providers/domains/client.py">create</a>(...) -> CreateIdpDomainResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1234,7 +1284,7 @@ client.organization.domains.identity_providers.get(
 <dl>
 <dd>
 
-Add a domain to the identity provider's list of domains for [Home Realm Discovery (HRD)](https://auth0.com/docs/get-started/architecture-scenarios/business-to-business/authentication#home-realm-discovery). The domain passed must be claimed and verified by this organization.
+Associate a domain with an Identity Provider specified by ID for this Organization. The domain must be claimed and verified.
 </dd>
 </dl>
 </dd>
@@ -1249,11 +1299,14 @@ Add a domain to the identity provider's list of domains for [Home Realm Discover
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.domains.create(
     idp_id="idp_id",
     domain="my-domain.com",
@@ -1301,7 +1354,7 @@ client.organization.identity_providers.domains.create(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.domains.<a href="src/auth0/myorganization/organization/identity_providers/domains/client.py">delete</a>(...) -&gt; AsyncHttpResponse[None]</code></summary>
+<details><summary><code>client.organization.identity_providers.domains.<a href="src/auth0.myorganization/organization/identity_providers/domains/client.py">delete</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -1313,7 +1366,7 @@ client.organization.identity_providers.domains.create(
 <dl>
 <dd>
 
-Remove a domain from an identity provider.
+Remove a domain specified by name from an Identity Provider specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -1328,11 +1381,14 @@ Remove a domain from an identity provider.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.domains.delete(
     idp_id="idp_id",
     domain="domain",
@@ -1381,7 +1437,7 @@ client.organization.identity_providers.domains.delete(
 </details>
 
 ## Organization IdentityProviders Provisioning
-<details><summary><code>client.organization.identity_providers.provisioning.<a href="src/auth0/myorganization/organization/identity_providers/provisioning/client.py">get</a>(...) -&gt; AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.provisioning.<a href="src/auth0.myorganization/organization/identity_providers/provisioning/client.py">get</a>(...) -> GetIdPProvisioningConfigResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1393,7 +1449,7 @@ client.organization.identity_providers.domains.delete(
 <dl>
 <dd>
 
-Retrieve the Provisioning configuration for this identity provider.
+Retrieve the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -1408,11 +1464,14 @@ Retrieve the Provisioning configuration for this identity provider.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.provisioning.get(
     idp_id="idp_id",
 )
@@ -1451,7 +1510,7 @@ client.organization.identity_providers.provisioning.get(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.provisioning.<a href="src/auth0/myorganization/organization/identity_providers/provisioning/client.py">create</a>(...) -&gt; AsyncHttpResponse[CreateIdPProvisioningConfigResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.provisioning.<a href="src/auth0.myorganization/organization/identity_providers/provisioning/client.py">create</a>(...) -> CreateIdPProvisioningConfigResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1463,7 +1522,7 @@ client.organization.identity_providers.provisioning.get(
 <dl>
 <dd>
 
-Create the Provisioning configuration for this identity provider.
+Create a new Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -1478,11 +1537,14 @@ Create the Provisioning configuration for this identity provider.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.provisioning.create(
     idp_id="idp_id",
 )
@@ -1521,7 +1583,7 @@ client.organization.identity_providers.provisioning.create(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.provisioning.<a href="src/auth0/myorganization/organization/identity_providers/provisioning/client.py">delete</a>(...) -&gt; AsyncHttpResponse[None]</code></summary>
+<details><summary><code>client.organization.identity_providers.provisioning.<a href="src/auth0.myorganization/organization/identity_providers/provisioning/client.py">delete</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -1533,7 +1595,7 @@ client.organization.identity_providers.provisioning.create(
 <dl>
 <dd>
 
-Delete the Provisioning configuration for an identity provider.
+Delete the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -1548,11 +1610,14 @@ Delete the Provisioning configuration for an identity provider.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.provisioning.delete(
     idp_id="idp_id",
 )
@@ -1591,7 +1656,7 @@ client.organization.identity_providers.provisioning.delete(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.provisioning.<a href="src/auth0/myorganization/organization/identity_providers/provisioning/client.py">update_attributes</a>(...) -&gt; AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.provisioning.<a href="src/auth0.myorganization/organization/identity_providers/provisioning/client.py">update_attributes</a>(...) -> GetIdPProvisioningConfigResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1603,7 +1668,7 @@ client.organization.identity_providers.provisioning.delete(
 <dl>
 <dd>
 
-Triggers a refresh of attribute mappings on the provisioning configuration by overriding it with the admin defined defaults. The endpoint doesn't accept any body parameters.
+Refresh the attribute mapping for the Provisioning Configuration of an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
 </dd>
 </dl>
 </dd>
@@ -1618,14 +1683,19 @@ Triggers a refresh of attribute mappings on the provisioning configuration by ov
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.provisioning.update_attributes(
     idp_id="idp_id",
-    request={"key": "value"},
+    request={
+        "key": "value"
+    },
 )
 
 ```
@@ -1671,7 +1741,7 @@ client.organization.identity_providers.provisioning.update_attributes(
 </details>
 
 ## Organization IdentityProviders Provisioning ScimTokens
-<details><summary><code>client.organization.identity_providers.provisioning.scim_tokens.<a href="src/auth0/myorganization/organization/identity_providers/provisioning/scim_tokens/client.py">list</a>(...) -&gt; AsyncHttpResponse[ListIdpProvisioningScimTokensResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.provisioning.scim_tokens.<a href="src/auth0.myorganization/organization/identity_providers/provisioning/scim_tokens/client.py">list</a>(...) -> ListIdpProvisioningScimTokensResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1683,7 +1753,7 @@ client.organization.identity_providers.provisioning.update_attributes(
 <dl>
 <dd>
 
-List the Provisioning SCIM tokens for this identity provider.
+Retrieve a list of [SCIM tokens](https://auth0.com/docs/authenticate/protocols/scim/configure-inbound-scim#scim-endpoints-and-tokens) for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -1698,11 +1768,14 @@ List the Provisioning SCIM tokens for this identity provider.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.provisioning.scim_tokens.list(
     idp_id="idp_id",
 )
@@ -1741,7 +1814,7 @@ client.organization.identity_providers.provisioning.scim_tokens.list(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.provisioning.scim_tokens.<a href="src/auth0/myorganization/organization/identity_providers/provisioning/scim_tokens/client.py">create</a>(...) -&gt; AsyncHttpResponse[CreateIdpProvisioningScimTokenResponseContent]</code></summary>
+<details><summary><code>client.organization.identity_providers.provisioning.scim_tokens.<a href="src/auth0.myorganization/organization/identity_providers/provisioning/scim_tokens/client.py">create</a>(...) -> CreateIdpProvisioningScimTokenResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1753,7 +1826,7 @@ client.organization.identity_providers.provisioning.scim_tokens.list(
 <dl>
 <dd>
 
-Create a Provisioning SCIM token for this identity provider.
+Create a new SCIM token for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -1768,11 +1841,14 @@ Create a Provisioning SCIM token for this identity provider.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.provisioning.scim_tokens.create(
     idp_id="idp_id",
     token_lifetime=86400,
@@ -1820,7 +1896,7 @@ client.organization.identity_providers.provisioning.scim_tokens.create(
 </dl>
 </details>
 
-<details><summary><code>client.organization.identity_providers.provisioning.scim_tokens.<a href="src/auth0/myorganization/organization/identity_providers/provisioning/scim_tokens/client.py">delete</a>(...) -&gt; AsyncHttpResponse[None]</code></summary>
+<details><summary><code>client.organization.identity_providers.provisioning.scim_tokens.<a href="src/auth0.myorganization/organization/identity_providers/provisioning/scim_tokens/client.py">delete</a>(...)</code></summary>
 <dl>
 <dd>
 
@@ -1832,7 +1908,7 @@ client.organization.identity_providers.provisioning.scim_tokens.create(
 <dl>
 <dd>
 
-Delete a Provisioning SCIM configuration for an identity provider.
+Revoke a SCIM token specified by token ID for the Provisioning Configuration of an Identity Provider specified by ID for this Organization.
 </dd>
 </dl>
 </dd>
@@ -1847,11 +1923,14 @@ Delete a Provisioning SCIM configuration for an identity provider.
 <dd>
 
 ```python
-from auth0 import Auth0
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
 
 client = Auth0(
-    token="YOUR_TOKEN",
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
 )
+
 client.organization.identity_providers.provisioning.scim_tokens.delete(
     idp_id="idp_id",
     idp_scim_token_id="idp_scim_token_id",

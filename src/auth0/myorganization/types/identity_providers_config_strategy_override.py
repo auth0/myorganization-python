@@ -3,9 +3,7 @@
 import typing
 
 import pydantic
-import typing_extensions
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from ..core.serialization import FieldMetadata
 from .identity_provider_config_adfs import IdentityProviderConfigAdfs
 from .identity_provider_config_google_apps import IdentityProviderConfigGoogleApps
 from .identity_provider_config_oidc import IdentityProviderConfigOidc
@@ -21,11 +19,7 @@ class IdentityProvidersConfigStrategyOverride(UniversalBaseModel):
     """
 
     adfs: typing.Optional[IdentityProviderConfigAdfs] = None
-    google_apps: typing_extensions.Annotated[
-        typing.Optional[IdentityProviderConfigGoogleApps],
-        FieldMetadata(alias="google-apps"),
-        pydantic.Field(alias="google-apps"),
-    ] = None
+    googleapps: typing.Optional[IdentityProviderConfigGoogleApps] = None
     oidc: typing.Optional[IdentityProviderConfigOidc] = None
     okta: typing.Optional[IdentityProviderConfigOkta] = None
     pingfederate: typing.Optional[IdentityProviderConfigPingFederate] = None

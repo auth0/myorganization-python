@@ -11,8 +11,8 @@ from .idp_strategy_enum import IdpStrategyEnum
 
 
 class IdpProvisioningConfig(UniversalBaseModel):
-    identity_provider_id: typing.Optional[IdpId] = None
-    identity_provider_name: typing.Optional[str] = pydantic.Field(default=None)
+    identity_provider_id: IdpId
+    identity_provider_name: str = pydantic.Field()
     """
     The name of the identity provider
     """

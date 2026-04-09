@@ -14,10 +14,8 @@ if typing.TYPE_CHECKING:
     from .create_identity_provider_response_content import CreateIdentityProviderResponseContent
     from .create_idp_domain_response_content import CreateIdpDomainResponseContent
     from .create_idp_provisioning_scim_token_response_content import CreateIdpProvisioningScimTokenResponseContent
-    from .create_member_invitation_response_content import CreateMemberInvitationResponseContent
     from .create_organization_domain_response_content import CreateOrganizationDomainResponseContent
     from .domain_idp import DomainIdp
-    from .domain_verification_enum import DomainVerificationEnum
     from .error_response_content import ErrorResponseContent
     from .fed_metadata_xml import FedMetadataXml
     from .get_configuration_response_content import GetConfigurationResponseContent
@@ -36,7 +34,6 @@ if typing.TYPE_CHECKING:
     from .identity_provider_config_samlp import IdentityProviderConfigSamlp
     from .identity_provider_config_waad import IdentityProviderConfigWaad
     from .identity_providers_config import IdentityProvidersConfig
-    from .identity_providers_config_domain_alias import IdentityProvidersConfigDomainAlias
     from .identity_providers_config_enabled_features_enum import IdentityProvidersConfigEnabledFeaturesEnum
     from .identity_providers_config_organization import IdentityProvidersConfigOrganization
     from .identity_providers_config_provisioning_methods_enum import IdentityProvidersConfigProvisioningMethodsEnum
@@ -129,13 +126,14 @@ if typing.TYPE_CHECKING:
     from .org_branding import OrgBranding
     from .org_branding_colors import OrgBrandingColors
     from .org_details import OrgDetails
+    from .org_details_read import OrgDetailsRead
     from .org_domain import OrgDomain
     from .org_domain_id import OrgDomainId
     from .org_domain_name import OrgDomainName
     from .org_domain_status_enum import OrgDomainStatusEnum
     from .org_id import OrgId
     from .org_member import OrgMember
-    from .org_member_id import OrgMemberId
+    from .org_member_id_read_only import OrgMemberIdReadOnly
     from .org_member_role import OrgMemberRole
     from .org_member_role_id import OrgMemberRoleId
     from .organization_access_level_enum import OrganizationAccessLevelEnum
@@ -158,10 +156,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "CreateIdentityProviderResponseContent": ".create_identity_provider_response_content",
     "CreateIdpDomainResponseContent": ".create_idp_domain_response_content",
     "CreateIdpProvisioningScimTokenResponseContent": ".create_idp_provisioning_scim_token_response_content",
-    "CreateMemberInvitationResponseContent": ".create_member_invitation_response_content",
     "CreateOrganizationDomainResponseContent": ".create_organization_domain_response_content",
     "DomainIdp": ".domain_idp",
-    "DomainVerificationEnum": ".domain_verification_enum",
     "ErrorResponseContent": ".error_response_content",
     "FedMetadataXml": ".fed_metadata_xml",
     "GetConfigurationResponseContent": ".get_configuration_response_content",
@@ -180,7 +176,6 @@ _dynamic_imports: typing.Dict[str, str] = {
     "IdentityProviderConfigSamlp": ".identity_provider_config_samlp",
     "IdentityProviderConfigWaad": ".identity_provider_config_waad",
     "IdentityProvidersConfig": ".identity_providers_config",
-    "IdentityProvidersConfigDomainAlias": ".identity_providers_config_domain_alias",
     "IdentityProvidersConfigEnabledFeaturesEnum": ".identity_providers_config_enabled_features_enum",
     "IdentityProvidersConfigOrganization": ".identity_providers_config_organization",
     "IdentityProvidersConfigProvisioningMethodsEnum": ".identity_providers_config_provisioning_methods_enum",
@@ -273,13 +268,14 @@ _dynamic_imports: typing.Dict[str, str] = {
     "OrgBranding": ".org_branding",
     "OrgBrandingColors": ".org_branding_colors",
     "OrgDetails": ".org_details",
+    "OrgDetailsRead": ".org_details_read",
     "OrgDomain": ".org_domain",
     "OrgDomainId": ".org_domain_id",
     "OrgDomainName": ".org_domain_name",
     "OrgDomainStatusEnum": ".org_domain_status_enum",
     "OrgId": ".org_id",
     "OrgMember": ".org_member",
-    "OrgMemberId": ".org_member_id",
+    "OrgMemberIdReadOnly": ".org_member_id_read_only",
     "OrgMemberRole": ".org_member_role",
     "OrgMemberRoleId": ".org_member_role_id",
     "OrganizationAccessLevelEnum": ".organization_access_level_enum",
@@ -324,10 +320,8 @@ __all__ = [
     "CreateIdentityProviderResponseContent",
     "CreateIdpDomainResponseContent",
     "CreateIdpProvisioningScimTokenResponseContent",
-    "CreateMemberInvitationResponseContent",
     "CreateOrganizationDomainResponseContent",
     "DomainIdp",
-    "DomainVerificationEnum",
     "ErrorResponseContent",
     "FedMetadataXml",
     "GetConfigurationResponseContent",
@@ -346,7 +340,6 @@ __all__ = [
     "IdentityProviderConfigSamlp",
     "IdentityProviderConfigWaad",
     "IdentityProvidersConfig",
-    "IdentityProvidersConfigDomainAlias",
     "IdentityProvidersConfigEnabledFeaturesEnum",
     "IdentityProvidersConfigOrganization",
     "IdentityProvidersConfigProvisioningMethodsEnum",
@@ -439,13 +432,14 @@ __all__ = [
     "OrgBranding",
     "OrgBrandingColors",
     "OrgDetails",
+    "OrgDetailsRead",
     "OrgDomain",
     "OrgDomainId",
     "OrgDomainName",
     "OrgDomainStatusEnum",
     "OrgId",
     "OrgMember",
-    "OrgMemberId",
+    "OrgMemberIdReadOnly",
     "OrgMemberRole",
     "OrgMemberRoleId",
     "OrganizationAccessLevelEnum",

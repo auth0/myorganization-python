@@ -6,7 +6,9 @@ from json.decoder import JSONDecodeError
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.http_response import AsyncHttpResponse, HttpResponse
-from ...core.jsonable_encoder import jsonable_encoder
+from ...core.jsonable_encoder import encode_path_param
+from ...core.pagination import AsyncPager, SyncPager
+from ...core.parse_error import ParsingError
 from ...core.pydantic_utilities import parse_obj_as
 from ...core.request_options import RequestOptions
 from ...errors.bad_request_error import BadRequestError
@@ -19,8 +21,10 @@ from ...types.create_organization_domain_response_content import CreateOrganizat
 from ...types.error_response_content import ErrorResponseContent
 from ...types.get_organization_domain_response_content import GetOrganizationDomainResponseContent
 from ...types.list_organization_domains_response_content import ListOrganizationDomainsResponseContent
+from ...types.org_domain import OrgDomain
 from ...types.org_domain_id import OrgDomainId
 from ...types.org_domain_name import OrgDomainName
+from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -31,36 +35,69 @@ class RawDomainsClient:
         self._client_wrapper = client_wrapper
 
     def list(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[ListOrganizationDomainsResponseContent]:
+        self,
+        *,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[OrgDomain, ListOrganizationDomainsResponseContent]:
         """
-        Lists all domains pending and verified for an organization.
+        Retrieve a list of all pending and verified domains for this Organization.
 
         Parameters
         ----------
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[ListOrganizationDomainsResponseContent]
+        SyncPager[OrgDomain, ListOrganizationDomainsResponseContent]
             List domains for an organization.
         """
         _response = self._client_wrapper.httpx_client.request(
             "domains",
             method="GET",
+            params={
+                "from": from_,
+                "take": take,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
+                _parsed_response = typing.cast(
                     ListOrganizationDomainsResponseContent,
                     parse_obj_as(
                         type_=ListOrganizationDomainsResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return HttpResponse(response=_response, data=_data)
+                _items = _parsed_response.organization_domains
+                _parsed_next = _parsed_response.next
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list(
+                    from_=_parsed_next,
+                    take=take,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 401:
                 raise UnauthorizedError(
                     headers=dict(_response.headers),
@@ -108,13 +145,17 @@ class RawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def create(
         self, *, domain: OrgDomainName, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[CreateOrganizationDomainResponseContent]:
         """
-        Create a new domain for an organization.
+        Create a new domain for this Organization.
 
         Parameters
         ----------
@@ -219,13 +260,17 @@ class RawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get(
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[GetOrganizationDomainResponseContent]:
         """
-        Retrieve a domain for an organization.
+        Retrieve details of a domain specified by ID for this Organization.
 
         Parameters
         ----------
@@ -240,7 +285,7 @@ class RawDomainsClient:
             Organization domain successfully retrieved.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"domains/{jsonable_encoder(domain_id)}",
+            f"domains/{encode_path_param(domain_id)}",
             method="GET",
             request_options=request_options,
         )
@@ -312,13 +357,17 @@ class RawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def delete(
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[None]:
         """
-        Remove a domain from this organization.
+        Remove a domain specified by ID from this Organization.
 
         Parameters
         ----------
@@ -332,7 +381,7 @@ class RawDomainsClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"domains/{jsonable_encoder(domain_id)}",
+            f"domains/{encode_path_param(domain_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -397,6 +446,10 @@ class RawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
@@ -405,36 +458,72 @@ class AsyncRawDomainsClient:
         self._client_wrapper = client_wrapper
 
     async def list(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[ListOrganizationDomainsResponseContent]:
+        self,
+        *,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[OrgDomain, ListOrganizationDomainsResponseContent]:
         """
-        Lists all domains pending and verified for an organization.
+        Retrieve a list of all pending and verified domains for this Organization.
 
         Parameters
         ----------
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[ListOrganizationDomainsResponseContent]
+        AsyncPager[OrgDomain, ListOrganizationDomainsResponseContent]
             List domains for an organization.
         """
         _response = await self._client_wrapper.httpx_client.request(
             "domains",
             method="GET",
+            params={
+                "from": from_,
+                "take": take,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
+                _parsed_response = typing.cast(
                     ListOrganizationDomainsResponseContent,
                     parse_obj_as(
                         type_=ListOrganizationDomainsResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return AsyncHttpResponse(response=_response, data=_data)
+                _items = _parsed_response.organization_domains
+                _parsed_next = _parsed_response.next
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list(
+                        from_=_parsed_next,
+                        take=take,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 401:
                 raise UnauthorizedError(
                     headers=dict(_response.headers),
@@ -482,13 +571,17 @@ class AsyncRawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def create(
         self, *, domain: OrgDomainName, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[CreateOrganizationDomainResponseContent]:
         """
-        Create a new domain for an organization.
+        Create a new domain for this Organization.
 
         Parameters
         ----------
@@ -593,13 +686,17 @@ class AsyncRawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get(
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[GetOrganizationDomainResponseContent]:
         """
-        Retrieve a domain for an organization.
+        Retrieve details of a domain specified by ID for this Organization.
 
         Parameters
         ----------
@@ -614,7 +711,7 @@ class AsyncRawDomainsClient:
             Organization domain successfully retrieved.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"domains/{jsonable_encoder(domain_id)}",
+            f"domains/{encode_path_param(domain_id)}",
             method="GET",
             request_options=request_options,
         )
@@ -686,13 +783,17 @@ class AsyncRawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
-        Remove a domain from this organization.
+        Remove a domain specified by ID from this Organization.
 
         Parameters
         ----------
@@ -706,7 +807,7 @@ class AsyncRawDomainsClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"domains/{jsonable_encoder(domain_id)}",
+            f"domains/{encode_path_param(domain_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -771,4 +872,8 @@ class AsyncRawDomainsClient:
             _response_json = _response.json()
         except JSONDecodeError:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
