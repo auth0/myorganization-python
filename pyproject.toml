@@ -4,7 +4,7 @@ dynamic = ["version"]
 
 [tool.poetry]
 name = "myorganization-python"
-version = "1.0.0"
+version = "1.0.0b0"
 description = "Auth0 My Organization Python SDK"
 readme = "README.md"
 authors = ["Auth0 <support@auth0.com>"]
