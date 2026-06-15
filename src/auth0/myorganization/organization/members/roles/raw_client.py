@@ -7,6 +7,7 @@ from ....core.api_error import ApiError
 from ....core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ....core.http_response import AsyncHttpResponse, HttpResponse
 from ....core.jsonable_encoder import encode_path_param
+from ....core.pagination import AsyncPager, SyncPager
 from ....core.parse_error import ParsingError
 from ....core.pydantic_utilities import parse_obj_as
 from ....core.request_options import RequestOptions
@@ -15,53 +16,78 @@ from ....errors.forbidden_error import ForbiddenError
 from ....errors.not_found_error import NotFoundError
 from ....errors.too_many_requests_error import TooManyRequestsError
 from ....errors.unauthorized_error import UnauthorizedError
-from ....types.create_id_p_provisioning_config_response_content import CreateIdPProvisioningConfigResponseContent
 from ....types.error_response_content import ErrorResponseContent
-from ....types.get_id_p_provisioning_config_response_content import GetIdPProvisioningConfigResponseContent
-from ....types.idp_id import IdpId
+from ....types.get_organization_member_roles_response_content import GetOrganizationMemberRolesResponseContent
+from ....types.org_member_id import OrgMemberId
+from ....types.role import Role
+from ....types.role_id import RoleId
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawProvisioningClient:
+class RawRolesClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[GetIdPProvisioningConfigResponseContent]:
+    def list(
+        self,
+        user_id: OrgMemberId,
+        *,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[Role, GetOrganizationMemberRolesResponseContent]:
         """
-        Retrieve the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Retrieve a list of roles assigned to a member specified by ID for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        user_id : OrgMemberId
+
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[GetIdPProvisioningConfigResponseContent]
-            Provisioning config successfully retrieved.
+        SyncPager[Role, GetOrganizationMemberRolesResponseContent]
+            Retrieved memeber roles successfully.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
+            f"members/{encode_path_param(user_id)}/roles",
             method="GET",
+            params={
+                "from": from_,
+                "take": take,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetIdPProvisioningConfigResponseContent,
+                _parsed_response = typing.cast(
+                    GetOrganizationMemberRolesResponseContent,
                     parse_obj_as(
-                        type_=GetIdPProvisioningConfigResponseContent,  # type: ignore
+                        type_=GetOrganizationMemberRolesResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return HttpResponse(response=_response, data=_data)
+                _items = _parsed_response.roles
+                _parsed_next = _parsed_response.next
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list(
+                    user_id,
+                    from_=_parsed_next,
+                    take=take,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
@@ -126,110 +152,21 @@ class RawProvisioningClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def create(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[CreateIdPProvisioningConfigResponseContent]:
+    def assign(
+        self,
+        user_id: OrgMemberId,
+        *,
+        role_ids: typing.Sequence[RoleId],
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[None]:
         """
-        Create a new Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Assign roles to a member specified by ID for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        user_id : OrgMemberId
 
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[CreateIdPProvisioningConfigResponseContent]
-            Provisioning configuration successfully created.
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
-            method="POST",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CreateIdPProvisioningConfigResponseContent,
-                    parse_obj_as(
-                        type_=CreateIdPProvisioningConfigResponseContent,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        except ValidationError as e:
-            raise ParsingError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
-            )
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    def delete(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
-        """
-        Delete the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
-
-        Parameters
-        ----------
-        idp_id : IdpId
+        role_ids : typing.Sequence[RoleId]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -239,9 +176,13 @@ class RawProvisioningClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
-            method="DELETE",
+            f"members/{encode_path_param(user_id)}/roles",
+            method="POST",
+            json={
+                "role_ids": role_ids,
+            },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
@@ -310,47 +251,41 @@ class RawProvisioningClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def update_attributes(
+    def unassign(
         self,
-        idp_id: IdpId,
+        user_id: OrgMemberId,
         *,
-        request: typing.Dict[str, typing.Any],
+        role_ids: typing.Sequence[RoleId],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[GetIdPProvisioningConfigResponseContent]:
+    ) -> HttpResponse[None]:
         """
-        Refresh the attribute mapping for the Provisioning Configuration of an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
+        Remove roles from a member specified by ID for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        user_id : OrgMemberId
 
-        request : typing.Dict[str, typing.Any]
+        role_ids : typing.Sequence[RoleId]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[GetIdPProvisioningConfigResponseContent]
-            Provisioning config successfully retrieved.
+        HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning/update-attributes",
-            method="PUT",
-            json=request,
+            f"members/{encode_path_param(user_id)}/roles",
+            method="DELETE",
+            json={
+                "role_ids": role_ids,
+            },
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetIdPProvisioningConfigResponseContent,
-                    parse_obj_as(
-                        type_=GetIdPProvisioningConfigResponseContent,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
+                return HttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
@@ -416,43 +351,70 @@ class RawProvisioningClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
-class AsyncRawProvisioningClient:
+class AsyncRawRolesClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]:
+    async def list(
+        self,
+        user_id: OrgMemberId,
+        *,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[Role, GetOrganizationMemberRolesResponseContent]:
         """
-        Retrieve the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Retrieve a list of roles assigned to a member specified by ID for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        user_id : OrgMemberId
+
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]
-            Provisioning config successfully retrieved.
+        AsyncPager[Role, GetOrganizationMemberRolesResponseContent]
+            Retrieved memeber roles successfully.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
+            f"members/{encode_path_param(user_id)}/roles",
             method="GET",
+            params={
+                "from": from_,
+                "take": take,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetIdPProvisioningConfigResponseContent,
+                _parsed_response = typing.cast(
+                    GetOrganizationMemberRolesResponseContent,
                     parse_obj_as(
-                        type_=GetIdPProvisioningConfigResponseContent,  # type: ignore
+                        type_=GetOrganizationMemberRolesResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return AsyncHttpResponse(response=_response, data=_data)
+                _items = _parsed_response.roles
+                _parsed_next = _parsed_response.next
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list(
+                        user_id,
+                        from_=_parsed_next,
+                        take=take,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
@@ -517,112 +479,21 @@ class AsyncRawProvisioningClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def create(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[CreateIdPProvisioningConfigResponseContent]:
-        """
-        Create a new Provisioning Configuration for an Identity Provider specified by ID for this Organization.
-
-        Parameters
-        ----------
-        idp_id : IdpId
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[CreateIdPProvisioningConfigResponseContent]
-            Provisioning configuration successfully created.
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
-            method="POST",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CreateIdPProvisioningConfigResponseContent,
-                    parse_obj_as(
-                        type_=CreateIdPProvisioningConfigResponseContent,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        except ValidationError as e:
-            raise ParsingError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
-            )
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    async def delete(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
+    async def assign(
+        self,
+        user_id: OrgMemberId,
+        *,
+        role_ids: typing.Sequence[RoleId],
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[None]:
         """
-        Delete the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Assign roles to a member specified by ID for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        user_id : OrgMemberId
+
+        role_ids : typing.Sequence[RoleId]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -632,9 +503,13 @@ class AsyncRawProvisioningClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
-            method="DELETE",
+            f"members/{encode_path_param(user_id)}/roles",
+            method="POST",
+            json={
+                "role_ids": role_ids,
+            },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
@@ -703,47 +578,41 @@ class AsyncRawProvisioningClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def update_attributes(
+    async def unassign(
         self,
-        idp_id: IdpId,
+        user_id: OrgMemberId,
         *,
-        request: typing.Dict[str, typing.Any],
+        role_ids: typing.Sequence[RoleId],
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]:
+    ) -> AsyncHttpResponse[None]:
         """
-        Refresh the attribute mapping for the Provisioning Configuration of an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
+        Remove roles from a member specified by ID for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        user_id : OrgMemberId
 
-        request : typing.Dict[str, typing.Any]
+        role_ids : typing.Sequence[RoleId]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]
-            Provisioning config successfully retrieved.
+        AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning/update-attributes",
-            method="PUT",
-            json=request,
+            f"members/{encode_path_param(user_id)}/roles",
+            method="DELETE",
+            json={
+                "role_ids": role_ids,
+            },
             request_options=request_options,
             omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetIdPProvisioningConfigResponseContent,
-                    parse_obj_as(
-                        type_=GetIdPProvisioningConfigResponseContent,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
+                return AsyncHttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),

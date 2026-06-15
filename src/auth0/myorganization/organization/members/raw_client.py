@@ -3,63 +3,107 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ..core.api_error import ApiError
-from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from ..core.http_response import AsyncHttpResponse, HttpResponse
-from ..core.parse_error import ParsingError
-from ..core.pydantic_utilities import parse_obj_as
-from ..core.request_options import RequestOptions
-from ..core.serialization import convert_and_respect_annotation_metadata
-from ..errors.bad_request_error import BadRequestError
-from ..errors.forbidden_error import ForbiddenError
-from ..errors.not_found_error import NotFoundError
-from ..errors.too_many_requests_error import TooManyRequestsError
-from ..errors.unauthorized_error import UnauthorizedError
-from ..types.error_response_content import ErrorResponseContent
-from ..types.get_organization_details_response_content import GetOrganizationDetailsResponseContent
-from ..types.org_branding import OrgBranding
-from ..types.update_organization_details_response_content import UpdateOrganizationDetailsResponseContent
+from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ...core.http_response import AsyncHttpResponse, HttpResponse
+from ...core.jsonable_encoder import encode_path_param
+from ...core.pagination import AsyncPager, SyncPager
+from ...core.parse_error import ParsingError
+from ...core.pydantic_utilities import parse_obj_as
+from ...core.request_options import RequestOptions
+from ...errors.bad_request_error import BadRequestError
+from ...errors.forbidden_error import ForbiddenError
+from ...errors.not_found_error import NotFoundError
+from ...errors.too_many_requests_error import TooManyRequestsError
+from ...errors.unauthorized_error import UnauthorizedError
+from ...types.error_response_content import ErrorResponseContent
+from ...types.get_organization_member_response_content import GetOrganizationMemberResponseContent
+from ...types.list_organization_members_response_content import ListOrganizationMembersResponseContent
+from ...types.org_member import OrgMember
+from ...types.org_member_id import OrgMemberId
 from pydantic import ValidationError
 
-# this is used as the default value for optional parameters
-OMIT = typing.cast(typing.Any, ...)
 
-
-class RawOrganizationDetailsClient:
+class RawMembersClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[GetOrganizationDetailsResponseContent]:
+    def list(
+        self,
+        *,
+        fields: typing.Optional[str] = None,
+        include_fields: typing.Optional[bool] = True,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[OrgMember, ListOrganizationMembersResponseContent]:
         """
-        Retrieve details for this Organization, including display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
+        Retrieve a list of all members for this Organization. The `roles` field is only included for each member when the token also carries the `read:my_org:member_roles` scope; without that scope the `roles` field is omitted from the response.
 
         Parameters
         ----------
+        fields : typing.Optional[str]
+            Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields.
+
+        include_fields : typing.Optional[bool]
+            Whether specified fields are to be included (true) or excluded (false). Defaults to true
+
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[GetOrganizationDetailsResponseContent]
-            Organization details successfully retrieved.
+        SyncPager[OrgMember, ListOrganizationMembersResponseContent]
+            List members for an organization.
         """
         _response = self._client_wrapper.httpx_client.request(
-            "details",
+            "members",
             method="GET",
+            params={
+                "fields": fields,
+                "include_fields": include_fields,
+                "from": from_,
+                "take": take,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetOrganizationDetailsResponseContent,
+                _parsed_response = typing.cast(
+                    ListOrganizationMembersResponseContent,
                     parse_obj_as(
-                        type_=GetOrganizationDetailsResponseContent,  # type: ignore
+                        type_=ListOrganizationMembersResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return HttpResponse(response=_response, data=_data)
+                _items = _parsed_response.members
+                _parsed_next = _parsed_response.next
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list(
+                    fields=fields,
+                    include_fields=include_fields,
+                    from_=_parsed_next,
+                    take=take,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 401:
                 raise UnauthorizedError(
                     headers=dict(_response.headers),
@@ -113,54 +157,50 @@ class RawOrganizationDetailsClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def update(
+    def get(
         self,
+        user_id: OrgMemberId,
         *,
-        name: typing.Optional[str] = OMIT,
-        display_name: typing.Optional[str] = OMIT,
-        branding: typing.Optional[OrgBranding] = OMIT,
+        fields: typing.Optional[str] = None,
+        include_fields: typing.Optional[bool] = True,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[UpdateOrganizationDetailsResponseContent]:
+    ) -> HttpResponse[GetOrganizationMemberResponseContent]:
         """
-        Update details for this Organization, such as display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
+        Retrieve details of a member specified by user ID for this Organization.
 
         Parameters
         ----------
-        name : typing.Optional[str]
-            The name of this organization.
+        user_id : OrgMemberId
 
-        display_name : typing.Optional[str]
-            Friendly name of this organization.
+        fields : typing.Optional[str]
+            Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields.
 
-        branding : typing.Optional[OrgBranding]
+        include_fields : typing.Optional[bool]
+            Whether specified fields are to be included (true) or excluded (false). Defaults to true
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[UpdateOrganizationDetailsResponseContent]
-            Organization details successfully retrieved.
+        HttpResponse[GetOrganizationMemberResponseContent]
+            Retrieve a member of the organization.
         """
         _response = self._client_wrapper.httpx_client.request(
-            "details",
-            method="PATCH",
-            json={
-                "name": name,
-                "display_name": display_name,
-                "branding": convert_and_respect_annotation_metadata(
-                    object_=branding, annotation=OrgBranding, direction="write"
-                ),
+            f"members/{encode_path_param(user_id)}",
+            method="GET",
+            params={
+                "fields": fields,
+                "include_fields": include_fields,
             },
             request_options=request_options,
-            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    UpdateOrganizationDetailsResponseContent,
+                    GetOrganizationMemberResponseContent,
                     parse_obj_as(
-                        type_=UpdateOrganizationDetailsResponseContent,  # type: ignore
+                        type_=GetOrganizationMemberResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -230,41 +270,89 @@ class RawOrganizationDetailsClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
 
-class AsyncRawOrganizationDetailsClient:
+class AsyncRawMembersClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get(
-        self, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[GetOrganizationDetailsResponseContent]:
+    async def list(
+        self,
+        *,
+        fields: typing.Optional[str] = None,
+        include_fields: typing.Optional[bool] = True,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncPager[OrgMember, ListOrganizationMembersResponseContent]:
         """
-        Retrieve details for this Organization, including display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
+        Retrieve a list of all members for this Organization. The `roles` field is only included for each member when the token also carries the `read:my_org:member_roles` scope; without that scope the `roles` field is omitted from the response.
 
         Parameters
         ----------
+        fields : typing.Optional[str]
+            Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields.
+
+        include_fields : typing.Optional[bool]
+            Whether specified fields are to be included (true) or excluded (false). Defaults to true
+
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[GetOrganizationDetailsResponseContent]
-            Organization details successfully retrieved.
+        AsyncPager[OrgMember, ListOrganizationMembersResponseContent]
+            List members for an organization.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "details",
+            "members",
             method="GET",
+            params={
+                "fields": fields,
+                "include_fields": include_fields,
+                "from": from_,
+                "take": take,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetOrganizationDetailsResponseContent,
+                _parsed_response = typing.cast(
+                    ListOrganizationMembersResponseContent,
                     parse_obj_as(
-                        type_=GetOrganizationDetailsResponseContent,  # type: ignore
+                        type_=ListOrganizationMembersResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return AsyncHttpResponse(response=_response, data=_data)
+                _items = _parsed_response.members
+                _parsed_next = _parsed_response.next
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list(
+                        fields=fields,
+                        include_fields=include_fields,
+                        from_=_parsed_next,
+                        take=take,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 401:
                 raise UnauthorizedError(
                     headers=dict(_response.headers),
@@ -318,54 +406,50 @@ class AsyncRawOrganizationDetailsClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def update(
+    async def get(
         self,
+        user_id: OrgMemberId,
         *,
-        name: typing.Optional[str] = OMIT,
-        display_name: typing.Optional[str] = OMIT,
-        branding: typing.Optional[OrgBranding] = OMIT,
+        fields: typing.Optional[str] = None,
+        include_fields: typing.Optional[bool] = True,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[UpdateOrganizationDetailsResponseContent]:
+    ) -> AsyncHttpResponse[GetOrganizationMemberResponseContent]:
         """
-        Update details for this Organization, such as display name and branding options. To learn more about Auth0 Organizations, read [Organizations](https://auth0.com/docs/manage-users/organizations).
+        Retrieve details of a member specified by user ID for this Organization.
 
         Parameters
         ----------
-        name : typing.Optional[str]
-            The name of this organization.
+        user_id : OrgMemberId
 
-        display_name : typing.Optional[str]
-            Friendly name of this organization.
+        fields : typing.Optional[str]
+            Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields.
 
-        branding : typing.Optional[OrgBranding]
+        include_fields : typing.Optional[bool]
+            Whether specified fields are to be included (true) or excluded (false). Defaults to true
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[UpdateOrganizationDetailsResponseContent]
-            Organization details successfully retrieved.
+        AsyncHttpResponse[GetOrganizationMemberResponseContent]
+            Retrieve a member of the organization.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "details",
-            method="PATCH",
-            json={
-                "name": name,
-                "display_name": display_name,
-                "branding": convert_and_respect_annotation_metadata(
-                    object_=branding, annotation=OrgBranding, direction="write"
-                ),
+            f"members/{encode_path_param(user_id)}",
+            method="GET",
+            params={
+                "fields": fields,
+                "include_fields": include_fields,
             },
             request_options=request_options,
-            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    UpdateOrganizationDetailsResponseContent,
+                    GetOrganizationMemberResponseContent,
                     parse_obj_as(
-                        type_=UpdateOrganizationDetailsResponseContent,  # type: ignore
+                        type_=GetOrganizationMemberResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

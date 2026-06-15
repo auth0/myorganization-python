@@ -10,7 +10,7 @@ from .invitation_id import InvitationId
 from .member_invitation_invitee import MemberInvitationInvitee
 from .member_invitation_inviter import MemberInvitationInviter
 from .org_id import OrgId
-from .org_member_role_id import OrgMemberRoleId
+from .role_id import RoleId
 
 
 class MemberInvitation(UniversalBaseModel):
@@ -29,7 +29,7 @@ class MemberInvitation(UniversalBaseModel):
     The ISO 8601 formatted timestamp representing the expiration time of the invitation.
     """
 
-    roles: typing.Optional[typing.List[OrgMemberRoleId]] = None
+    roles: typing.Optional[typing.List[RoleId]] = None
     invitation_url: typing.Optional[str] = pydantic.Field(default=None)
     """
     The invitation url to be sent to the invitee.
