@@ -1059,6 +1059,757 @@ client.organization.identity_providers.detach(
 </dl>
 </details>
 
+## Organization Members
+<details><summary><code>client.organization.members.<a href="src/auth0.myorganization/organization/members/client.py">list</a>(...) -> ListOrganizationMembersResponseContent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a list of all members for this Organization. The `roles` field is only included for each member when the token also carries the `read:my_org:member_roles` scope; without that scope the `roles` field is omitted from the response.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.members.list(
+    fields="fields",
+    include_fields=True,
+    from_="from",
+    take=1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fields:** `typing.Optional[str]` — Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_fields:** `typing.Optional[bool]` — Whether specified fields are to be included (true) or excluded (false). Defaults to true
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**from:** `typing.Optional[str]` — An optional cursor from which to start the selection (exclusive).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**take:** `typing.Optional[int]` — Number of results per page. Defaults to 50.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.organization.members.<a href="src/auth0.myorganization/organization/members/client.py">get</a>(...) -> GetOrganizationMemberResponseContent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve details of a member specified by user ID for this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.members.get(
+    user_id="user_id",
+    fields="fields",
+    include_fields=True,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `OrgMemberId` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fields:** `typing.Optional[str]` — Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_fields:** `typing.Optional[bool]` — Whether specified fields are to be included (true) or excluded (false). Defaults to true
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Organization Memberships
+<details><summary><code>client.organization.memberships.<a href="src/auth0.myorganization/organization/memberships/client.py">delete_memberships</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove one member from this Organization. The underlying user account is not deleted.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.memberships.delete_memberships(
+    members=[
+        "auth0|1234567890"
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**members:** `typing.List[OrgMemberId]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Organization Invitations
+<details><summary><code>client.organization.invitations.<a href="src/auth0.myorganization/organization/invitations/client.py">list</a>(...) -> ListMembersInvitationsResponseContent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a list of all member invitations for this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.invitations.list(
+    fields="fields",
+    include_fields=True,
+    from_="from",
+    take=1,
+    sort="sort",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**fields:** `typing.Optional[str]` — Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields. Note: you cannot filter on ticket_id and this value will only be returned when fields are not filtered.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_fields:** `typing.Optional[bool]` — Whether specified fields are to be included (true) or excluded (false). Defaults to true
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**from:** `typing.Optional[str]` — An optional cursor from which to start the selection (exclusive).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**take:** `typing.Optional[int]` — Number of results per page. Defaults to 50.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sort:** `typing.Optional[str]` — Field to sort by. Use field:order where order is 1 for ascending and -1 for descending. Defaults to created_at:-1
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.organization.invitations.<a href="src/auth0.myorganization/organization/invitations/client.py">create</a>(...) -> CreateMemberInvitationResponseContent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create one or more member invitations for this Organization. If an active invitation already exists for a user, generating a new invitation will automatically revoke any outstanding invitations for that user. Roles specified in the payload will be granted to the user upon acceptance of the invitation.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0, CreateMemberInvitationInvitee, MemberInvitationInviter
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.invitations.create(
+    invitees=[
+        CreateMemberInvitationInvitee(
+            email="user@example.com",
+            roles=[
+                "rol_0000000000000001"
+            ],
+        )
+    ],
+    inviter=MemberInvitationInviter(
+        name="Allison the Admin",
+    ),
+    identity_provider_id="con_2CZPv6IY0gWzDaQJ",
+    ttl_sec=3600,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**invitees:** `typing.List[CreateMemberInvitationInvitee]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**auth_0_custom_domain:** `typing.Optional[str]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**inviter:** `typing.Optional[MemberInvitationInviter]` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**identity_provider_id:** `typing.Optional[str]` — Identity provider identifier.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**ttl_sec:** `typing.Optional[int]` — Number of seconds for which the invitation is valid before expiration. If unspecified or set to 0, this value defaults to 604800 seconds (7 days). Max value: 2592000 seconds (30 days).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.organization.invitations.<a href="src/auth0.myorganization/organization/invitations/client.py">get</a>(...) -> GetMemberInvitationResponseContent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve details of a member invitation specified by ID for this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.invitations.get(
+    invitation_id="invitation_id",
+    fields="fields",
+    include_fields=True,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**invitation_id:** `InvitationId` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**fields:** `typing.Optional[str]` — Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields. Note: you cannot filter on ticket_id and this value will only be returned when fields are not filtered.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_fields:** `typing.Optional[bool]` — Whether specified fields are to be included (true) or excluded (false). Defaults to true
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.organization.invitations.<a href="src/auth0.myorganization/organization/invitations/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Revoke a member invitation specified by ID for this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.invitations.delete(
+    invitation_id="invitation_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**invitation_id:** `InvitationId` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Organization Roles
+<details><summary><code>client.organization.roles.<a href="src/auth0.myorganization/organization/roles/client.py">list</a>(...) -> ListRolesResponseContent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve the list of roles available for binding to members and invitations for this Organization. Only roles made visible to this Organization by the Tenant Admin are returned.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.roles.list(
+    from_="from",
+    take=1,
+    name="name",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**from:** `typing.Optional[str]` — An optional cursor from which to start the selection (exclusive).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**take:** `typing.Optional[int]` — Number of results per page. Defaults to 50.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `typing.Optional[str]` — An optional filter on the name (case-insensitive).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Organization Configuration IdentityProviders
 <details><summary><code>client.organization.configuration.identity_providers.<a href="src/auth0.myorganization/organization/configuration/identity_providers/client.py">get</a>() -> GetIdpConfigurationResponseContent</code></summary>
 <dl>
@@ -1959,6 +2710,266 @@ client.organization.identity_providers.provisioning.scim_tokens.delete(
 <dd>
 
 **idp_scim_token_id:** `IdpProvisioningScimTokenId` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Organization Members Roles
+<details><summary><code>client.organization.members.roles.<a href="src/auth0.myorganization/organization/members/roles/client.py">list</a>(...) -> GetOrganizationMemberRolesResponseContent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a list of roles assigned to a member specified by ID for this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.members.roles.list(
+    user_id="user_id",
+    from_="from",
+    take=1,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `OrgMemberId` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**from:** `typing.Optional[str]` — An optional cursor from which to start the selection (exclusive).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**take:** `typing.Optional[int]` — Number of results per page. Defaults to 50.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.organization.members.roles.<a href="src/auth0.myorganization/organization/members/roles/client.py">assign</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Assign roles to a member specified by ID for this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.members.roles.assign(
+    user_id="user_id",
+    role_ids=[
+        "rol_SO2j0sFo9NFa3F9w"
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `OrgMemberId` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `OrganizationMemberRolesChangeRequestContent` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.organization.members.roles.<a href="src/auth0.myorganization/organization/members/roles/client.py">unassign</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove roles from a member specified by ID for this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.members.roles.unassign(
+    user_id="user_id",
+    role_ids=[
+        "rol_SO2j0sFo9NFa3F9w"
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**user_id:** `OrgMemberId` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request:** `OrganizationMemberRolesChangeRequestContent` 
     
 </dd>
 </dl>

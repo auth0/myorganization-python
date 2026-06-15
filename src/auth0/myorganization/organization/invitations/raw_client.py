@@ -3,65 +3,109 @@
 import typing
 from json.decoder import JSONDecodeError
 
-from ....core.api_error import ApiError
-from ....core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from ....core.http_response import AsyncHttpResponse, HttpResponse
-from ....core.jsonable_encoder import encode_path_param
-from ....core.parse_error import ParsingError
-from ....core.pydantic_utilities import parse_obj_as
-from ....core.request_options import RequestOptions
-from ....errors.bad_request_error import BadRequestError
-from ....errors.forbidden_error import ForbiddenError
-from ....errors.not_found_error import NotFoundError
-from ....errors.too_many_requests_error import TooManyRequestsError
-from ....errors.unauthorized_error import UnauthorizedError
-from ....types.create_id_p_provisioning_config_response_content import CreateIdPProvisioningConfigResponseContent
-from ....types.error_response_content import ErrorResponseContent
-from ....types.get_id_p_provisioning_config_response_content import GetIdPProvisioningConfigResponseContent
-from ....types.idp_id import IdpId
+from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from ...core.http_response import AsyncHttpResponse, HttpResponse
+from ...core.jsonable_encoder import encode_path_param
+from ...core.pagination import AsyncPager, SyncPager
+from ...core.parse_error import ParsingError
+from ...core.pydantic_utilities import parse_obj_as
+from ...core.request_options import RequestOptions
+from ...core.serialization import convert_and_respect_annotation_metadata
+from ...errors.bad_request_error import BadRequestError
+from ...errors.forbidden_error import ForbiddenError
+from ...errors.not_found_error import NotFoundError
+from ...errors.too_many_requests_error import TooManyRequestsError
+from ...errors.unauthorized_error import UnauthorizedError
+from ...types.create_member_invitation_invitee import CreateMemberInvitationInvitee
+from ...types.create_member_invitation_response_content import CreateMemberInvitationResponseContent
+from ...types.error_response_content import ErrorResponseContent
+from ...types.get_member_invitation_response_content import GetMemberInvitationResponseContent
+from ...types.invitation_id import InvitationId
+from ...types.list_members_invitations_response_content import ListMembersInvitationsResponseContent
+from ...types.member_invitation import MemberInvitation
+from ...types.member_invitation_inviter import MemberInvitationInviter
 from pydantic import ValidationError
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
 
 
-class RawProvisioningClient:
+class RawInvitationsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[GetIdPProvisioningConfigResponseContent]:
+    def list(
+        self,
+        *,
+        fields: typing.Optional[str] = None,
+        include_fields: typing.Optional[bool] = True,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        sort: typing.Optional[str] = "created_at:-1",
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> SyncPager[MemberInvitation, ListMembersInvitationsResponseContent]:
         """
-        Retrieve the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Retrieve a list of all member invitations for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        fields : typing.Optional[str]
+            Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields. Note: you cannot filter on ticket_id and this value will only be returned when fields are not filtered.
+
+        include_fields : typing.Optional[bool]
+            Whether specified fields are to be included (true) or excluded (false). Defaults to true
+
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
+
+        sort : typing.Optional[str]
+            Field to sort by. Use field:order where order is 1 for ascending and -1 for descending. Defaults to created_at:-1
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[GetIdPProvisioningConfigResponseContent]
-            Provisioning config successfully retrieved.
+        SyncPager[MemberInvitation, ListMembersInvitationsResponseContent]
+            List Members Invitations for an Organization.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
+            "member-invitations",
             method="GET",
+            params={
+                "fields": fields,
+                "include_fields": include_fields,
+                "from": from_,
+                "take": take,
+                "sort": sort,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetIdPProvisioningConfigResponseContent,
+                _parsed_response = typing.cast(
+                    ListMembersInvitationsResponseContent,
                     parse_obj_as(
-                        type_=GetIdPProvisioningConfigResponseContent,  # type: ignore
+                        type_=ListMembersInvitationsResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return HttpResponse(response=_response, data=_data)
+                _items = _parsed_response.invitations
+                _parsed_next = _parsed_response.next
+                _has_next = _parsed_next is not None and _parsed_next != ""
+                _get_next = lambda: self.list(
+                    fields=fields,
+                    include_fields=include_fields,
+                    from_=_parsed_next,
+                    take=take,
+                    sort=sort,
+                    request_options=request_options,
+                )
+                return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
@@ -127,34 +171,66 @@ class RawProvisioningClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def create(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[CreateIdPProvisioningConfigResponseContent]:
+        self,
+        *,
+        invitees: typing.Sequence[CreateMemberInvitationInvitee],
+        auth_0_custom_domain: typing.Optional[str] = None,
+        inviter: typing.Optional[MemberInvitationInviter] = OMIT,
+        identity_provider_id: typing.Optional[str] = OMIT,
+        ttl_sec: typing.Optional[int] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[CreateMemberInvitationResponseContent]:
         """
-        Create a new Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Create one or more member invitations for this Organization. If an active invitation already exists for a user, generating a new invitation will automatically revoke any outstanding invitations for that user. Roles specified in the payload will be granted to the user upon acceptance of the invitation.
 
         Parameters
         ----------
-        idp_id : IdpId
+        invitees : typing.Sequence[CreateMemberInvitationInvitee]
+
+        auth_0_custom_domain : typing.Optional[str]
+
+        inviter : typing.Optional[MemberInvitationInviter]
+
+        identity_provider_id : typing.Optional[str]
+            Identity provider identifier.
+
+        ttl_sec : typing.Optional[int]
+            Number of seconds for which the invitation is valid before expiration. If unspecified or set to 0, this value defaults to 604800 seconds (7 days). Max value: 2592000 seconds (30 days).
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[CreateIdPProvisioningConfigResponseContent]
-            Provisioning configuration successfully created.
+        HttpResponse[CreateMemberInvitationResponseContent]
+            Create Member Invitations for an Organization.
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
+            "member-invitations",
             method="POST",
+            json={
+                "invitees": convert_and_respect_annotation_metadata(
+                    object_=invitees, annotation=typing.Sequence[CreateMemberInvitationInvitee], direction="write"
+                ),
+                "inviter": convert_and_respect_annotation_metadata(
+                    object_=inviter, annotation=MemberInvitationInviter, direction="write"
+                ),
+                "identity_provider_id": identity_provider_id,
+                "ttl_sec": ttl_sec,
+            },
+            headers={
+                "content-type": "application/json",
+                "auth0-custom-domain": str(auth_0_custom_domain) if auth_0_custom_domain is not None else None,
+            },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    CreateIdPProvisioningConfigResponseContent,
+                    CreateMemberInvitationResponseContent,
                     parse_obj_as(
-                        type_=CreateIdPProvisioningConfigResponseContent,  # type: ignore
+                        type_=CreateMemberInvitationResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -223,13 +299,127 @@ class RawProvisioningClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def delete(self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
+    def get(
+        self,
+        invitation_id: InvitationId,
+        *,
+        fields: typing.Optional[str] = None,
+        include_fields: typing.Optional[bool] = True,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[GetMemberInvitationResponseContent]:
         """
-        Delete the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Retrieve details of a member invitation specified by ID for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        invitation_id : InvitationId
+
+        fields : typing.Optional[str]
+            Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields. Note: you cannot filter on ticket_id and this value will only be returned when fields are not filtered.
+
+        include_fields : typing.Optional[bool]
+            Whether specified fields are to be included (true) or excluded (false). Defaults to true
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[GetMemberInvitationResponseContent]
+            Get Member Invitation for an Organization by Id.
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"member-invitations/{encode_path_param(invitation_id)}",
+            method="GET",
+            params={
+                "fields": fields,
+                "include_fields": include_fields,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    GetMemberInvitationResponseContent,
+                    parse_obj_as(
+                        type_=GetMemberInvitationResponseContent,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def delete(
+        self, invitation_id: InvitationId, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[None]:
+        """
+        Revoke a member invitation specified by ID for this Organization.
+
+        Parameters
+        ----------
+        invitation_id : InvitationId
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -239,7 +429,7 @@ class RawProvisioningClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
+            f"member-invitations/{encode_path_param(invitation_id)}",
             method="DELETE",
             request_options=request_options,
         )
@@ -310,47 +500,85 @@ class RawProvisioningClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def update_attributes(
+
+class AsyncRawInvitationsClient:
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
+        self._client_wrapper = client_wrapper
+
+    async def list(
         self,
-        idp_id: IdpId,
         *,
-        request: typing.Dict[str, typing.Any],
+        fields: typing.Optional[str] = None,
+        include_fields: typing.Optional[bool] = True,
+        from_: typing.Optional[str] = None,
+        take: typing.Optional[int] = 50,
+        sort: typing.Optional[str] = "created_at:-1",
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[GetIdPProvisioningConfigResponseContent]:
+    ) -> AsyncPager[MemberInvitation, ListMembersInvitationsResponseContent]:
         """
-        Refresh the attribute mapping for the Provisioning Configuration of an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
+        Retrieve a list of all member invitations for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        fields : typing.Optional[str]
+            Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields. Note: you cannot filter on ticket_id and this value will only be returned when fields are not filtered.
 
-        request : typing.Dict[str, typing.Any]
+        include_fields : typing.Optional[bool]
+            Whether specified fields are to be included (true) or excluded (false). Defaults to true
+
+        from_ : typing.Optional[str]
+            An optional cursor from which to start the selection (exclusive).
+
+        take : typing.Optional[int]
+            Number of results per page. Defaults to 50.
+
+        sort : typing.Optional[str]
+            Field to sort by. Use field:order where order is 1 for ascending and -1 for descending. Defaults to created_at:-1
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        HttpResponse[GetIdPProvisioningConfigResponseContent]
-            Provisioning config successfully retrieved.
+        AsyncPager[MemberInvitation, ListMembersInvitationsResponseContent]
+            List Members Invitations for an Organization.
         """
-        _response = self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning/update-attributes",
-            method="PUT",
-            json=request,
+        _response = await self._client_wrapper.httpx_client.request(
+            "member-invitations",
+            method="GET",
+            params={
+                "fields": fields,
+                "include_fields": include_fields,
+                "from": from_,
+                "take": take,
+                "sort": sort,
+            },
             request_options=request_options,
-            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetIdPProvisioningConfigResponseContent,
+                _parsed_response = typing.cast(
+                    ListMembersInvitationsResponseContent,
                     parse_obj_as(
-                        type_=GetIdPProvisioningConfigResponseContent,  # type: ignore
+                        type_=ListMembersInvitationsResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
-                return HttpResponse(response=_response, data=_data)
+                _items = _parsed_response.invitations
+                _parsed_next = _parsed_response.next
+                _has_next = _parsed_next is not None and _parsed_next != ""
+
+                async def _get_next():
+                    return await self.list(
+                        fields=fields,
+                        include_fields=include_fields,
+                        from_=_parsed_next,
+                        take=take,
+                        sort=sort,
+                        request_options=request_options,
+                    )
+
+                return AsyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
@@ -415,40 +643,67 @@ class RawProvisioningClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-
-class AsyncRawProvisioningClient:
-    def __init__(self, *, client_wrapper: AsyncClientWrapper):
-        self._client_wrapper = client_wrapper
-
-    async def get(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]:
+    async def create(
+        self,
+        *,
+        invitees: typing.Sequence[CreateMemberInvitationInvitee],
+        auth_0_custom_domain: typing.Optional[str] = None,
+        inviter: typing.Optional[MemberInvitationInviter] = OMIT,
+        identity_provider_id: typing.Optional[str] = OMIT,
+        ttl_sec: typing.Optional[int] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[CreateMemberInvitationResponseContent]:
         """
-        Retrieve the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Create one or more member invitations for this Organization. If an active invitation already exists for a user, generating a new invitation will automatically revoke any outstanding invitations for that user. Roles specified in the payload will be granted to the user upon acceptance of the invitation.
 
         Parameters
         ----------
-        idp_id : IdpId
+        invitees : typing.Sequence[CreateMemberInvitationInvitee]
+
+        auth_0_custom_domain : typing.Optional[str]
+
+        inviter : typing.Optional[MemberInvitationInviter]
+
+        identity_provider_id : typing.Optional[str]
+            Identity provider identifier.
+
+        ttl_sec : typing.Optional[int]
+            Number of seconds for which the invitation is valid before expiration. If unspecified or set to 0, this value defaults to 604800 seconds (7 days). Max value: 2592000 seconds (30 days).
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]
-            Provisioning config successfully retrieved.
+        AsyncHttpResponse[CreateMemberInvitationResponseContent]
+            Create Member Invitations for an Organization.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
-            method="GET",
+            "member-invitations",
+            method="POST",
+            json={
+                "invitees": convert_and_respect_annotation_metadata(
+                    object_=invitees, annotation=typing.Sequence[CreateMemberInvitationInvitee], direction="write"
+                ),
+                "inviter": convert_and_respect_annotation_metadata(
+                    object_=inviter, annotation=MemberInvitationInviter, direction="write"
+                ),
+                "identity_provider_id": identity_provider_id,
+                "ttl_sec": ttl_sec,
+            },
+            headers={
+                "content-type": "application/json",
+                "auth0-custom-domain": str(auth_0_custom_domain) if auth_0_custom_domain is not None else None,
+            },
             request_options=request_options,
+            omit=OMIT,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    GetIdPProvisioningConfigResponseContent,
+                    CreateMemberInvitationResponseContent,
                     parse_obj_as(
-                        type_=GetIdPProvisioningConfigResponseContent,  # type: ignore
+                        type_=CreateMemberInvitationResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -517,35 +772,50 @@ class AsyncRawProvisioningClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def create(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[CreateIdPProvisioningConfigResponseContent]:
+    async def get(
+        self,
+        invitation_id: InvitationId,
+        *,
+        fields: typing.Optional[str] = None,
+        include_fields: typing.Optional[bool] = True,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[GetMemberInvitationResponseContent]:
         """
-        Create a new Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Retrieve details of a member invitation specified by ID for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        invitation_id : InvitationId
+
+        fields : typing.Optional[str]
+            Comma-separated list of fields to include or exclude (based on value provided for include_fields) in the result. Leave empty to retrieve all fields. Note: you cannot filter on ticket_id and this value will only be returned when fields are not filtered.
+
+        include_fields : typing.Optional[bool]
+            Whether specified fields are to be included (true) or excluded (false). Defaults to true
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
         Returns
         -------
-        AsyncHttpResponse[CreateIdPProvisioningConfigResponseContent]
-            Provisioning configuration successfully created.
+        AsyncHttpResponse[GetMemberInvitationResponseContent]
+            Get Member Invitation for an Organization by Id.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
-            method="POST",
+            f"member-invitations/{encode_path_param(invitation_id)}",
+            method="GET",
+            params={
+                "fields": fields,
+                "include_fields": include_fields,
+            },
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    CreateIdPProvisioningConfigResponseContent,
+                    GetMemberInvitationResponseContent,
                     parse_obj_as(
-                        type_=CreateIdPProvisioningConfigResponseContent,  # type: ignore
+                        type_=GetMemberInvitationResponseContent,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -615,14 +885,14 @@ class AsyncRawProvisioningClient:
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def delete(
-        self, idp_id: IdpId, *, request_options: typing.Optional[RequestOptions] = None
+        self, invitation_id: InvitationId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
-        Delete the Provisioning Configuration for an Identity Provider specified by ID for this Organization.
+        Revoke a member invitation specified by ID for this Organization.
 
         Parameters
         ----------
-        idp_id : IdpId
+        invitation_id : InvitationId
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -632,118 +902,13 @@ class AsyncRawProvisioningClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning",
+            f"member-invitations/{encode_path_param(invitation_id)}",
             method="DELETE",
             request_options=request_options,
         )
         try:
             if 200 <= _response.status_code < 300:
                 return AsyncHttpResponse(response=_response, data=None)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        except ValidationError as e:
-            raise ParsingError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
-            )
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    async def update_attributes(
-        self,
-        idp_id: IdpId,
-        *,
-        request: typing.Dict[str, typing.Any],
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]:
-        """
-        Refresh the attribute mapping for the Provisioning Configuration of an Identity Provider specified by ID for this Organization. Mappings are reset to the admin-defined defaults.
-
-        Parameters
-        ----------
-        idp_id : IdpId
-
-        request : typing.Dict[str, typing.Any]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[GetIdPProvisioningConfigResponseContent]
-            Provisioning config successfully retrieved.
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"identity-providers/{encode_path_param(idp_id)}/provisioning/update-attributes",
-            method="PUT",
-            json=request,
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetIdPProvisioningConfigResponseContent,
-                    parse_obj_as(
-                        type_=GetIdPProvisioningConfigResponseContent,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),

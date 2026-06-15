@@ -4,13 +4,11 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .org_member_role_id import OrgMemberRoleId
+from .role_id import RoleId
 
 
-class OrgMemberRole(UniversalBaseModel):
-    id: OrgMemberRoleId
-    name: str
-    description: typing.Optional[str] = None
+class OrganizationMemberRolesChangeRequestContent(UniversalBaseModel):
+    role_ids: typing.List[RoleId]
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

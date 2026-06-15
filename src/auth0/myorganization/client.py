@@ -78,7 +78,7 @@ class Auth0:
         )
         if tenant_domain is not None:
             _tenant_domain = tenant_domain if tenant_domain is not None else "{TENANT}.auth0.com"
-            base_url = "https://{tenantDomain}/my-org".format(tenantDomain=_tenant_domain)
+            base_url = "https://{tenantDomain}/my-org/v1".format(tenantDomain=_tenant_domain)
         self._client_wrapper = SyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             token=token,
@@ -197,7 +197,7 @@ class AsyncAuth0:
         )
         if tenant_domain is not None:
             _tenant_domain = tenant_domain if tenant_domain is not None else "{TENANT}.auth0.com"
-            base_url = "https://{tenantDomain}/my-org".format(tenantDomain=_tenant_domain)
+            base_url = "https://{tenantDomain}/my-org/v1".format(tenantDomain=_tenant_domain)
         self._client_wrapper = AsyncClientWrapper(
             base_url=_get_base_url(base_url=base_url, environment=environment),
             token=token,

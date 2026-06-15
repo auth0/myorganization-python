@@ -143,9 +143,6 @@ class RawIdentityProvidersClient:
             json=convert_and_respect_annotation_metadata(
                 object_=request, annotation=CreateIdentityProviderRequestContent, direction="write"
             ),
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -448,9 +445,6 @@ class RawIdentityProvidersClient:
             json=convert_and_respect_annotation_metadata(
                 object_=request, annotation=UpdateIdentityProviderRequestContent, direction="write"
             ),
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -556,9 +550,6 @@ class RawIdentityProvidersClient:
             f"identity-providers/{encode_path_param(idp_id)}/update-attributes",
             method="PUT",
             json=request,
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -836,9 +827,6 @@ class AsyncRawIdentityProvidersClient:
             json=convert_and_respect_annotation_metadata(
                 object_=request, annotation=CreateIdentityProviderRequestContent, direction="write"
             ),
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -1143,9 +1131,6 @@ class AsyncRawIdentityProvidersClient:
             json=convert_and_respect_annotation_metadata(
                 object_=request, annotation=UpdateIdentityProviderRequestContent, direction="write"
             ),
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -1251,9 +1236,6 @@ class AsyncRawIdentityProvidersClient:
             f"identity-providers/{encode_path_param(idp_id)}/update-attributes",
             method="PUT",
             json=request,
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )

@@ -4,4 +4,4 @@ import enum
 
 
 class Auth0Environment(enum.Enum):
-    DEFAULT = "https://%7BTENANT%7D.auth0.com/my-org"
+    DEFAULT = "https://%7BTENANT%7D.auth0.com/my-org/v1"
