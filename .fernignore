@@ -11,7 +11,6 @@ src/auth0/myorganization/token_provider.py
 src/auth0/myorganization/core/client_wrapper.py
 
 # Root auth0 __init__.pys
-src/auth0/myorganization/__init__.py
 src/auth0/__init__.py
 
 # Tests
@@ -33,3 +32,6 @@ CHANGELOG.md
 .github/
 LICENSE
 NOTICE.txt
+.fern/replay.lock
+.fern/replay.yml
+.gitattributes

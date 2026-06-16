@@ -17,19 +17,19 @@ def test_organization_identityProviders_create() -> None:
     client = get_client(test_id)
     client.organization.identity_providers.create(
         request=IdpOidcRequest(
-            name="oidcIdp",
             strategy="oidc",
-            domains=["mydomain.com"],
-            display_name="OIDC IdP",
-            show_as_button=True,
-            assign_membership_on_login=False,
-            is_enabled=True,
             options=IdpOidcOptionsRequest(
                 type="front_channel",
                 client_id="a8f3b2e7-5d1c-4f9a-8b0d-2e1c3a5b6f7d",
                 client_secret="KzQp2sVxR8nTgMjFhYcEWuLoIbDvUoC6A9B1zX7yWqFjHkGrP5sQdLmNp",
                 discovery_url="https://{yourDomain}/.well-known/openid-configuration",
             ),
+            name="oidcIdp",
+            domains=["mydomain.com"],
+            display_name="OIDC IdP",
+            show_as_button=True,
+            assign_membership_on_login=False,
+            is_enabled=True,
         ),
     )
     verify_request_count(test_id, "POST", "/identity-providers", None, 1)

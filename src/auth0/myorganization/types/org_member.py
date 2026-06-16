@@ -6,13 +6,13 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2
 from .org_member_id_read_only import OrgMemberIdReadOnly
-from .org_member_role import OrgMemberRole
+from .role import Role
 from .user_attributes import UserAttributes
 
 
 class OrgMember(UserAttributes):
     user_id: typing.Optional[OrgMemberIdReadOnly] = None
-    roles: typing.Optional[typing.List[OrgMemberRole]] = None
+    roles: typing.Optional[typing.List[Role]] = None
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
     Date and time when this user was created (ISO_8601 format).
@@ -26,6 +26,11 @@ class OrgMember(UserAttributes):
     last_login: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
     Last date and time this user logged in (ISO_8601 format).
+    """
+
+    phone_number: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    Phone number associated with the user.
     """
 
     if IS_PYDANTIC_V2:

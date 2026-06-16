@@ -338,9 +338,6 @@ class RawProvisioningClient:
             f"identity-providers/{encode_path_param(idp_id)}/provisioning/update-attributes",
             method="PUT",
             json=request,
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -734,9 +731,6 @@ class AsyncRawProvisioningClient:
             f"identity-providers/{encode_path_param(idp_id)}/provisioning/update-attributes",
             method="PUT",
             json=request,
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )

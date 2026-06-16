@@ -14,6 +14,8 @@ if typing.TYPE_CHECKING:
     from .create_identity_provider_response_content import CreateIdentityProviderResponseContent
     from .create_idp_domain_response_content import CreateIdpDomainResponseContent
     from .create_idp_provisioning_scim_token_response_content import CreateIdpProvisioningScimTokenResponseContent
+    from .create_member_invitation_invitee import CreateMemberInvitationInvitee
+    from .create_member_invitation_response_content import CreateMemberInvitationResponseContent
     from .create_organization_domain_response_content import CreateOrganizationDomainResponseContent
     from .domain_idp import DomainIdp
     from .error_response_content import ErrorResponseContent
@@ -26,6 +28,7 @@ if typing.TYPE_CHECKING:
     from .get_organization_details_response_content import GetOrganizationDetailsResponseContent
     from .get_organization_domain_response_content import GetOrganizationDomainResponseContent
     from .get_organization_member_response_content import GetOrganizationMemberResponseContent
+    from .get_organization_member_roles_response_content import GetOrganizationMemberRolesResponseContent
     from .identity_provider_config_adfs import IdentityProviderConfigAdfs
     from .identity_provider_config_google_apps import IdentityProviderConfigGoogleApps
     from .identity_provider_config_oidc import IdentityProviderConfigOidc
@@ -117,7 +120,10 @@ if typing.TYPE_CHECKING:
     from .list_domain_identity_providers_response_content import ListDomainIdentityProvidersResponseContent
     from .list_identity_providers_response_content import ListIdentityProvidersResponseContent
     from .list_idp_provisioning_scim_tokens_response_content import ListIdpProvisioningScimTokensResponseContent
+    from .list_members_invitations_response_content import ListMembersInvitationsResponseContent
     from .list_organization_domains_response_content import ListOrganizationDomainsResponseContent
+    from .list_organization_members_response_content import ListOrganizationMembersResponseContent
+    from .list_roles_response_content import ListRolesResponseContent
     from .manual import Manual
     from .member_invitation import MemberInvitation
     from .member_invitation_invitee import MemberInvitationInvitee
@@ -133,10 +139,12 @@ if typing.TYPE_CHECKING:
     from .org_domain_status_enum import OrgDomainStatusEnum
     from .org_id import OrgId
     from .org_member import OrgMember
+    from .org_member_id import OrgMemberId
     from .org_member_id_read_only import OrgMemberIdReadOnly
-    from .org_member_role import OrgMemberRole
-    from .org_member_role_id import OrgMemberRoleId
     from .organization_access_level_enum import OrganizationAccessLevelEnum
+    from .organization_member_roles_change_request_content import OrganizationMemberRolesChangeRequestContent
+    from .role import Role
+    from .role_id import RoleId
     from .start_organization_domain_verification_response_content import (
         StartOrganizationDomainVerificationResponseContent,
     )
@@ -156,6 +164,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "CreateIdentityProviderResponseContent": ".create_identity_provider_response_content",
     "CreateIdpDomainResponseContent": ".create_idp_domain_response_content",
     "CreateIdpProvisioningScimTokenResponseContent": ".create_idp_provisioning_scim_token_response_content",
+    "CreateMemberInvitationInvitee": ".create_member_invitation_invitee",
+    "CreateMemberInvitationResponseContent": ".create_member_invitation_response_content",
     "CreateOrganizationDomainResponseContent": ".create_organization_domain_response_content",
     "DomainIdp": ".domain_idp",
     "ErrorResponseContent": ".error_response_content",
@@ -168,6 +178,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "GetOrganizationDetailsResponseContent": ".get_organization_details_response_content",
     "GetOrganizationDomainResponseContent": ".get_organization_domain_response_content",
     "GetOrganizationMemberResponseContent": ".get_organization_member_response_content",
+    "GetOrganizationMemberRolesResponseContent": ".get_organization_member_roles_response_content",
     "IdentityProviderConfigAdfs": ".identity_provider_config_adfs",
     "IdentityProviderConfigGoogleApps": ".identity_provider_config_google_apps",
     "IdentityProviderConfigOidc": ".identity_provider_config_oidc",
@@ -259,7 +270,10 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ListDomainIdentityProvidersResponseContent": ".list_domain_identity_providers_response_content",
     "ListIdentityProvidersResponseContent": ".list_identity_providers_response_content",
     "ListIdpProvisioningScimTokensResponseContent": ".list_idp_provisioning_scim_tokens_response_content",
+    "ListMembersInvitationsResponseContent": ".list_members_invitations_response_content",
     "ListOrganizationDomainsResponseContent": ".list_organization_domains_response_content",
+    "ListOrganizationMembersResponseContent": ".list_organization_members_response_content",
+    "ListRolesResponseContent": ".list_roles_response_content",
     "Manual": ".manual",
     "MemberInvitation": ".member_invitation",
     "MemberInvitationInvitee": ".member_invitation_invitee",
@@ -275,10 +289,12 @@ _dynamic_imports: typing.Dict[str, str] = {
     "OrgDomainStatusEnum": ".org_domain_status_enum",
     "OrgId": ".org_id",
     "OrgMember": ".org_member",
+    "OrgMemberId": ".org_member_id",
     "OrgMemberIdReadOnly": ".org_member_id_read_only",
-    "OrgMemberRole": ".org_member_role",
-    "OrgMemberRoleId": ".org_member_role_id",
     "OrganizationAccessLevelEnum": ".organization_access_level_enum",
+    "OrganizationMemberRolesChangeRequestContent": ".organization_member_roles_change_request_content",
+    "Role": ".role",
+    "RoleId": ".role_id",
     "StartOrganizationDomainVerificationResponseContent": ".start_organization_domain_verification_response_content",
     "UpdateIdentityProviderRequestContent": ".update_identity_provider_request_content",
     "UpdateIdentityProviderResponseContent": ".update_identity_provider_response_content",
@@ -320,6 +336,8 @@ __all__ = [
     "CreateIdentityProviderResponseContent",
     "CreateIdpDomainResponseContent",
     "CreateIdpProvisioningScimTokenResponseContent",
+    "CreateMemberInvitationInvitee",
+    "CreateMemberInvitationResponseContent",
     "CreateOrganizationDomainResponseContent",
     "DomainIdp",
     "ErrorResponseContent",
@@ -332,6 +350,7 @@ __all__ = [
     "GetOrganizationDetailsResponseContent",
     "GetOrganizationDomainResponseContent",
     "GetOrganizationMemberResponseContent",
+    "GetOrganizationMemberRolesResponseContent",
     "IdentityProviderConfigAdfs",
     "IdentityProviderConfigGoogleApps",
     "IdentityProviderConfigOidc",
@@ -423,7 +442,10 @@ __all__ = [
     "ListDomainIdentityProvidersResponseContent",
     "ListIdentityProvidersResponseContent",
     "ListIdpProvisioningScimTokensResponseContent",
+    "ListMembersInvitationsResponseContent",
     "ListOrganizationDomainsResponseContent",
+    "ListOrganizationMembersResponseContent",
+    "ListRolesResponseContent",
     "Manual",
     "MemberInvitation",
     "MemberInvitationInvitee",
@@ -439,10 +461,12 @@ __all__ = [
     "OrgDomainStatusEnum",
     "OrgId",
     "OrgMember",
+    "OrgMemberId",
     "OrgMemberIdReadOnly",
-    "OrgMemberRole",
-    "OrgMemberRoleId",
     "OrganizationAccessLevelEnum",
+    "OrganizationMemberRolesChangeRequestContent",
+    "Role",
+    "RoleId",
     "StartOrganizationDomainVerificationResponseContent",
     "UpdateIdentityProviderRequestContent",
     "UpdateIdentityProviderResponseContent",

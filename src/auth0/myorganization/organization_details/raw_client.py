@@ -152,9 +152,6 @@ class RawOrganizationDetailsClient:
                     object_=branding, annotation=OrgBranding, direction="write"
                 ),
             },
-            headers={
-                "content-type": "application/json",
-            },
             request_options=request_options,
             omit=OMIT,
         )
@@ -359,9 +356,6 @@ class AsyncRawOrganizationDetailsClient:
                 "branding": convert_and_respect_annotation_metadata(
                     object_=branding, annotation=OrgBranding, direction="write"
                 ),
-            },
-            headers={
-                "content-type": "application/json",
             },
             request_options=request_options,
             omit=OMIT,

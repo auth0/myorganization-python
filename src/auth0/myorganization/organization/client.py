@@ -11,6 +11,10 @@ if typing.TYPE_CHECKING:
     from .configuration.client import AsyncConfigurationClient, ConfigurationClient
     from .domains.client import AsyncDomainsClient, DomainsClient
     from .identity_providers.client import AsyncIdentityProvidersClient, IdentityProvidersClient
+    from .invitations.client import AsyncInvitationsClient, InvitationsClient
+    from .members.client import AsyncMembersClient, MembersClient
+    from .memberships.client import AsyncMembershipsClient, MembershipsClient
+    from .roles.client import AsyncRolesClient, RolesClient
 
 
 class OrganizationClient:
@@ -20,6 +24,10 @@ class OrganizationClient:
         self._configuration: typing.Optional[ConfigurationClient] = None
         self._domains: typing.Optional[DomainsClient] = None
         self._identity_providers: typing.Optional[IdentityProvidersClient] = None
+        self._members: typing.Optional[MembersClient] = None
+        self._memberships: typing.Optional[MembershipsClient] = None
+        self._invitations: typing.Optional[InvitationsClient] = None
+        self._roles: typing.Optional[RolesClient] = None
 
     @property
     def with_raw_response(self) -> RawOrganizationClient:
@@ -56,6 +64,38 @@ class OrganizationClient:
             self._identity_providers = IdentityProvidersClient(client_wrapper=self._client_wrapper)
         return self._identity_providers
 
+    @property
+    def members(self):
+        if self._members is None:
+            from .members.client import MembersClient  # noqa: E402
+
+            self._members = MembersClient(client_wrapper=self._client_wrapper)
+        return self._members
+
+    @property
+    def memberships(self):
+        if self._memberships is None:
+            from .memberships.client import MembershipsClient  # noqa: E402
+
+            self._memberships = MembershipsClient(client_wrapper=self._client_wrapper)
+        return self._memberships
+
+    @property
+    def invitations(self):
+        if self._invitations is None:
+            from .invitations.client import InvitationsClient  # noqa: E402
+
+            self._invitations = InvitationsClient(client_wrapper=self._client_wrapper)
+        return self._invitations
+
+    @property
+    def roles(self):
+        if self._roles is None:
+            from .roles.client import RolesClient  # noqa: E402
+
+            self._roles = RolesClient(client_wrapper=self._client_wrapper)
+        return self._roles
+
 
 class AsyncOrganizationClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -64,6 +104,10 @@ class AsyncOrganizationClient:
         self._configuration: typing.Optional[AsyncConfigurationClient] = None
         self._domains: typing.Optional[AsyncDomainsClient] = None
         self._identity_providers: typing.Optional[AsyncIdentityProvidersClient] = None
+        self._members: typing.Optional[AsyncMembersClient] = None
+        self._memberships: typing.Optional[AsyncMembershipsClient] = None
+        self._invitations: typing.Optional[AsyncInvitationsClient] = None
+        self._roles: typing.Optional[AsyncRolesClient] = None
 
     @property
     def with_raw_response(self) -> AsyncRawOrganizationClient:
@@ -99,3 +143,35 @@ class AsyncOrganizationClient:
 
             self._identity_providers = AsyncIdentityProvidersClient(client_wrapper=self._client_wrapper)
         return self._identity_providers
+
+    @property
+    def members(self):
+        if self._members is None:
+            from .members.client import AsyncMembersClient  # noqa: E402
+
+            self._members = AsyncMembersClient(client_wrapper=self._client_wrapper)
+        return self._members
+
+    @property
+    def memberships(self):
+        if self._memberships is None:
+            from .memberships.client import AsyncMembershipsClient  # noqa: E402
+
+            self._memberships = AsyncMembershipsClient(client_wrapper=self._client_wrapper)
+        return self._memberships
+
+    @property
+    def invitations(self):
+        if self._invitations is None:
+            from .invitations.client import AsyncInvitationsClient  # noqa: E402
+
+            self._invitations = AsyncInvitationsClient(client_wrapper=self._client_wrapper)
+        return self._invitations
+
+    @property
+    def roles(self):
+        if self._roles is None:
+            from .roles.client import AsyncRolesClient  # noqa: E402
+
+            self._roles = AsyncRolesClient(client_wrapper=self._client_wrapper)
+        return self._roles
