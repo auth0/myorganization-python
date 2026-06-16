@@ -32,3 +32,6 @@ CHANGELOG.md
 .github/
 LICENSE
 NOTICE.txt
+.fern/replay.lock
+.fern/replay.yml
+.gitattributes
