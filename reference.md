@@ -611,8 +611,14 @@ client = Auth0(
 
 client.organization.identity_providers.create(
     request=IdpOidcRequest(
-        name="oidcIdp",
         strategy="oidc",
+        options=IdpOidcOptionsRequest(
+            type="front_channel",
+            client_id="a8f3b2e7-5d1c-4f9a-8b0d-2e1c3a5b6f7d",
+            client_secret="KzQp2sVxR8nTgMjFhYcEWuLoIbDvUoC6A9B1zX7yWqFjHkGrP5sQdLmNp",
+            discovery_url="https://{yourDomain}/.well-known/openid-configuration",
+        ),
+        name="oidcIdp",
         domains=[
             "mydomain.com"
         ],
@@ -620,12 +626,6 @@ client.organization.identity_providers.create(
         show_as_button=True,
         assign_membership_on_login=False,
         is_enabled=True,
-        options=IdpOidcOptionsRequest(
-            type="front_channel",
-            client_id="a8f3b2e7-5d1c-4f9a-8b0d-2e1c3a5b6f7d",
-            client_secret="KzQp2sVxR8nTgMjFhYcEWuLoIbDvUoC6A9B1zX7yWqFjHkGrP5sQdLmNp",
-            discovery_url="https://{yourDomain}/.well-known/openid-configuration",
-        ),
     ),
 )
 
