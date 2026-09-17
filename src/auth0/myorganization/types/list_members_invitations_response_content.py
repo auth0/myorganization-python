@@ -13,6 +13,16 @@ class ListMembersInvitationsResponseContent(UniversalBaseModel):
     Pagination cursor for the next page of results.
     """
 
+    total: typing.Optional[int] = pydantic.Field(default=None)
+    """
+    Best-effort count of pending invitations in the result set (reflecting any active filters). Only present when include_totals=true. Capped at 1000.
+    """
+
+    total_is_capped: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    Whether counting stopped before reaching the true size of the result set. When true, 'total' is a lower bound (the true size is 'total' or greater); when false, 'total' reflects the full result set as counted. Only present when 'total' is present.
+    """
+
     invitations: typing.Optional[typing.List[MemberInvitation]] = None
 
     if IS_PYDANTIC_V2:

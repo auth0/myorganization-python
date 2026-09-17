@@ -2,7 +2,7 @@
 
 import typing
 
-from .automatic import Automatic
-from .manual import Manual
+from .idp_samlp_options_request_metadata_url import IdpSamlpOptionsRequestMetadataUrl
+from .idp_samlp_options_request_sign_in_endpoint import IdpSamlpOptionsRequestSignInEndpoint
 
-IdpSamlpOptionsRequest = typing.Union[Automatic, Manual]
+IdpSamlpOptionsRequest = typing.Union[IdpSamlpOptionsRequestMetadataUrl, IdpSamlpOptionsRequestSignInEndpoint]

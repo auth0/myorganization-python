@@ -5,6 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .identity_providers_config_enabled_features_enum import IdentityProvidersConfigEnabledFeaturesEnum
+from .identity_providers_config_provisioning_configuration import IdentityProvidersConfigProvisioningConfiguration
 from .identity_providers_config_provisioning_methods_enum import IdentityProvidersConfigProvisioningMethodsEnum
 
 
@@ -19,6 +20,7 @@ class IdentityProvidersConfigStrategyBase(UniversalBaseModel):
     """
 
     provisioning_methods: typing.List[IdentityProvidersConfigProvisioningMethodsEnum]
+    provisioning: typing.Optional[IdentityProvidersConfigProvisioningConfiguration] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

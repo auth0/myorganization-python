@@ -23,6 +23,7 @@ from ...types.error_response_content import ErrorResponseContent
 from ...types.get_identity_provider_response_content import GetIdentityProviderResponseContent
 from ...types.idp_id import IdpId
 from ...types.list_identity_providers_response_content import ListIdentityProvidersResponseContent
+from ...types.organization_access_level_enum import OrganizationAccessLevelEnum
 from ...types.update_identity_provider_request_content import UpdateIdentityProviderRequestContent
 from ...types.update_identity_provider_response_content import UpdateIdentityProviderResponseContent
 from pydantic import ValidationError
@@ -36,13 +37,25 @@ class RawIdentityProvidersClient:
         self._client_wrapper = client_wrapper
 
     def list(
-        self, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        member_access_level: typing.Optional[
+            typing.Union[OrganizationAccessLevelEnum, typing.Sequence[OrganizationAccessLevelEnum]]
+        ] = None,
+        is_enabled: typing.Optional[bool] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[ListIdentityProvidersResponseContent]:
         """
-        Retrieve a list of all Identity Providers for this Organization.
+        Retrieve the comprehensive list of identity providers and their respective configurations associated with an Auth0 Organization.
 
         Parameters
         ----------
+        member_access_level : typing.Optional[typing.Union[OrganizationAccessLevelEnum, typing.Sequence[OrganizationAccessLevelEnum]]]
+            When present, only connections whose Organization Member Access Level matches one of the provided values are returned. Accepted values are full, limited, readonly and none.
+
+        is_enabled : typing.Optional[bool]
+            Filter the returned list by enabled status. When `true`, only enabled items are returned; when `false`, only disabled items; when omitted, all items are returned.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -54,6 +67,10 @@ class RawIdentityProvidersClient:
         _response = self._client_wrapper.httpx_client.request(
             "identity-providers",
             method="GET",
+            params={
+                "member_access_level": member_access_level,
+                "is_enabled": is_enabled,
+            },
             request_options=request_options,
         )
         try:
@@ -66,6 +83,17 @@ class RawIdentityProvidersClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 401:
                 raise UnauthorizedError(
                     headers=dict(_response.headers),
@@ -123,7 +151,7 @@ class RawIdentityProvidersClient:
         self, *, request: CreateIdentityProviderRequestContent, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[CreateIdentityProviderResponseContent]:
         """
-        Create a new Identity Provider for this Organization.
+        Create a new enterprise Identity Provider utilizing the specified configuration settings and details for this Auth0 Organization.
 
         Parameters
         ----------
@@ -720,13 +748,25 @@ class AsyncRawIdentityProvidersClient:
         self._client_wrapper = client_wrapper
 
     async def list(
-        self, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        member_access_level: typing.Optional[
+            typing.Union[OrganizationAccessLevelEnum, typing.Sequence[OrganizationAccessLevelEnum]]
+        ] = None,
+        is_enabled: typing.Optional[bool] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[ListIdentityProvidersResponseContent]:
         """
-        Retrieve a list of all Identity Providers for this Organization.
+        Retrieve the comprehensive list of identity providers and their respective configurations associated with an Auth0 Organization.
 
         Parameters
         ----------
+        member_access_level : typing.Optional[typing.Union[OrganizationAccessLevelEnum, typing.Sequence[OrganizationAccessLevelEnum]]]
+            When present, only connections whose Organization Member Access Level matches one of the provided values are returned. Accepted values are full, limited, readonly and none.
+
+        is_enabled : typing.Optional[bool]
+            Filter the returned list by enabled status. When `true`, only enabled items are returned; when `false`, only disabled items; when omitted, all items are returned.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -738,6 +778,10 @@ class AsyncRawIdentityProvidersClient:
         _response = await self._client_wrapper.httpx_client.request(
             "identity-providers",
             method="GET",
+            params={
+                "member_access_level": member_access_level,
+                "is_enabled": is_enabled,
+            },
             request_options=request_options,
         )
         try:
@@ -750,6 +794,17 @@ class AsyncRawIdentityProvidersClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
             if _response.status_code == 401:
                 raise UnauthorizedError(
                     headers=dict(_response.headers),
@@ -807,7 +862,7 @@ class AsyncRawIdentityProvidersClient:
         self, *, request: CreateIdentityProviderRequestContent, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[CreateIdentityProviderResponseContent]:
         """
-        Create a new Identity Provider for this Organization.
+        Create a new enterprise Identity Provider utilizing the specified configuration settings and details for this Auth0 Organization.
 
         Parameters
         ----------

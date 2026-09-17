@@ -6,6 +6,7 @@ from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
 from ..types.get_organization_details_response_content import GetOrganizationDetailsResponseContent
 from ..types.org_branding import OrgBranding
+from ..types.org_third_party_client_access_enum import OrgThirdPartyClientAccessEnum
 from ..types.update_organization_details_response_content import UpdateOrganizationDetailsResponseContent
 from .raw_client import AsyncRawOrganizationDetailsClient, RawOrganizationDetailsClient
 
@@ -27,6 +28,31 @@ class OrganizationDetailsClient:
         RawOrganizationDetailsClient
         """
         return self._raw_client
+
+    def delete(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+        """
+        Permanently delete this Organization.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        from auth0 import Auth0
+
+        client = Auth0(
+            token="YOUR_TOKEN",
+        )
+        client.organization_details.delete()
+        """
+        _response = self._raw_client.delete(request_options=request_options)
+        return _response.data
 
     def get(self, *, request_options: typing.Optional[RequestOptions] = None) -> GetOrganizationDetailsResponseContent:
         """
@@ -60,6 +86,7 @@ class OrganizationDetailsClient:
         name: typing.Optional[str] = OMIT,
         display_name: typing.Optional[str] = OMIT,
         branding: typing.Optional[OrgBranding] = OMIT,
+        third_party_client_access: typing.Optional[OrgThirdPartyClientAccessEnum] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UpdateOrganizationDetailsResponseContent:
         """
@@ -74,6 +101,8 @@ class OrganizationDetailsClient:
             Friendly name of this organization.
 
         branding : typing.Optional[OrgBranding]
+
+        third_party_client_access : typing.Optional[OrgThirdPartyClientAccessEnum]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -103,7 +132,11 @@ class OrganizationDetailsClient:
         )
         """
         _response = self._raw_client.update(
-            name=name, display_name=display_name, branding=branding, request_options=request_options
+            name=name,
+            display_name=display_name,
+            branding=branding,
+            third_party_client_access=third_party_client_access,
+            request_options=request_options,
         )
         return _response.data
 
@@ -122,6 +155,39 @@ class AsyncOrganizationDetailsClient:
         AsyncRawOrganizationDetailsClient
         """
         return self._raw_client
+
+    async def delete(self, *, request_options: typing.Optional[RequestOptions] = None) -> None:
+        """
+        Permanently delete this Organization.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        import asyncio
+
+        from auth0 import AsyncAuth0
+
+        client = AsyncAuth0(
+            token="YOUR_TOKEN",
+        )
+
+
+        async def main() -> None:
+            await client.organization_details.delete()
+
+
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.delete(request_options=request_options)
+        return _response.data
 
     async def get(
         self, *, request_options: typing.Optional[RequestOptions] = None
@@ -165,6 +231,7 @@ class AsyncOrganizationDetailsClient:
         name: typing.Optional[str] = OMIT,
         display_name: typing.Optional[str] = OMIT,
         branding: typing.Optional[OrgBranding] = OMIT,
+        third_party_client_access: typing.Optional[OrgThirdPartyClientAccessEnum] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> UpdateOrganizationDetailsResponseContent:
         """
@@ -179,6 +246,8 @@ class AsyncOrganizationDetailsClient:
             Friendly name of this organization.
 
         branding : typing.Optional[OrgBranding]
+
+        third_party_client_access : typing.Optional[OrgThirdPartyClientAccessEnum]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -216,6 +285,10 @@ class AsyncOrganizationDetailsClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.update(
-            name=name, display_name=display_name, branding=branding, request_options=request_options
+            name=name,
+            display_name=display_name,
+            branding=branding,
+            third_party_client_access=third_party_client_access,
+            request_options=request_options,
         )
         return _response.data

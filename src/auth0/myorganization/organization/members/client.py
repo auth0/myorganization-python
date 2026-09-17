@@ -41,6 +41,7 @@ class MembersClient:
         include_fields: typing.Optional[bool] = True,
         from_: typing.Optional[str] = None,
         take: typing.Optional[int] = 50,
+        include_totals: typing.Optional[bool] = False,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[OrgMember, ListOrganizationMembersResponseContent]:
         """
@@ -59,6 +60,9 @@ class MembersClient:
 
         take : typing.Optional[int]
             Number of results per page. Defaults to 50.
+
+        include_totals : typing.Optional[bool]
+            When true, the response includes a 'total' count of items in the result set (reflecting any active filters), along with a 'total_is_capped' flag. The count is best-effort and capped at 1000; when the true size may be larger, 'total_is_capped' is true and 'total' is a lower bound. Omitted when not requested.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -80,6 +84,7 @@ class MembersClient:
             include_fields=True,
             from_="from",
             take=1,
+            include_totals=True,
         )
         for item in response:
             yield item
@@ -88,7 +93,12 @@ class MembersClient:
             yield page
         """
         return self._raw_client.list(
-            fields=fields, include_fields=include_fields, from_=from_, take=take, request_options=request_options
+            fields=fields,
+            include_fields=include_fields,
+            from_=from_,
+            take=take,
+            include_totals=include_totals,
+            request_options=request_options,
         )
 
     def get(
@@ -171,6 +181,7 @@ class AsyncMembersClient:
         include_fields: typing.Optional[bool] = True,
         from_: typing.Optional[str] = None,
         take: typing.Optional[int] = 50,
+        include_totals: typing.Optional[bool] = False,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[OrgMember, ListOrganizationMembersResponseContent]:
         """
@@ -189,6 +200,9 @@ class AsyncMembersClient:
 
         take : typing.Optional[int]
             Number of results per page. Defaults to 50.
+
+        include_totals : typing.Optional[bool]
+            When true, the response includes a 'total' count of items in the result set (reflecting any active filters), along with a 'total_is_capped' flag. The count is best-effort and capped at 1000; when the true size may be larger, 'total_is_capped' is true and 'total' is a lower bound. Omitted when not requested.
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -215,6 +229,7 @@ class AsyncMembersClient:
                 include_fields=True,
                 from_="from",
                 take=1,
+                include_totals=True,
             )
             async for item in response:
                 yield item
@@ -227,7 +242,12 @@ class AsyncMembersClient:
         asyncio.run(main())
         """
         return await self._raw_client.list(
-            fields=fields, include_fields=include_fields, from_=from_, take=take, request_options=request_options
+            fields=fields,
+            include_fields=include_fields,
+            from_=from_,
+            take=take,
+            include_totals=include_totals,
+            request_options=request_options,
         )
 
     async def get(

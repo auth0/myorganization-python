@@ -32,4 +32,4 @@ def test_organization_members_roles_unassign() -> None:
         user_id="user_id",
         role_ids=["rol_SO2j0sFo9NFa3F9w"],
     )
-    verify_request_count(test_id, "DELETE", "/members/user_id/roles", None, 1)
+    verify_request_count(test_id, "POST", "/members/user_id/unassign-roles", None, 1)

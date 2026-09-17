@@ -11,6 +11,7 @@ from .member_invitation_invitee import MemberInvitationInvitee
 from .member_invitation_inviter import MemberInvitationInviter
 from .org_id import OrgId
 from .role_id import RoleId
+from .user_store_id import UserStoreId
 
 
 class MemberInvitation(UniversalBaseModel):
@@ -19,6 +20,7 @@ class MemberInvitation(UniversalBaseModel):
     inviter: typing.Optional[MemberInvitationInviter] = None
     invitee: typing.Optional[MemberInvitationInvitee] = None
     identity_provider_id: typing.Optional[IdpId] = None
+    user_store_id: typing.Optional[UserStoreId] = None
     created_at: typing.Optional[dt.datetime] = pydantic.Field(default=None)
     """
     The ISO 8601 formatted timestamp representing the creation time of the invitation.

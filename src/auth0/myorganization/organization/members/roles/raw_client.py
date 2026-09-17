@@ -275,8 +275,8 @@ class RawRolesClient:
         HttpResponse[None]
         """
         _response = self._client_wrapper.httpx_client.request(
-            f"members/{encode_path_param(user_id)}/roles",
-            method="DELETE",
+            f"members/{encode_path_param(user_id)}/unassign-roles",
+            method="POST",
             json={
                 "role_ids": role_ids,
             },
@@ -602,8 +602,8 @@ class AsyncRawRolesClient:
         AsyncHttpResponse[None]
         """
         _response = await self._client_wrapper.httpx_client.request(
-            f"members/{encode_path_param(user_id)}/roles",
-            method="DELETE",
+            f"members/{encode_path_param(user_id)}/unassign-roles",
+            method="POST",
             json={
                 "role_ids": role_ids,
             },

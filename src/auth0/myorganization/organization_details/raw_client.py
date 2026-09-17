@@ -18,6 +18,7 @@ from ..errors.unauthorized_error import UnauthorizedError
 from ..types.error_response_content import ErrorResponseContent
 from ..types.get_organization_details_response_content import GetOrganizationDetailsResponseContent
 from ..types.org_branding import OrgBranding
+from ..types.org_third_party_client_access_enum import OrgThirdPartyClientAccessEnum
 from ..types.update_organization_details_response_content import UpdateOrganizationDetailsResponseContent
 from pydantic import ValidationError
 
@@ -28,6 +29,68 @@ OMIT = typing.cast(typing.Any, ...)
 class RawOrganizationDetailsClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
+
+    def delete(self, *, request_options: typing.Optional[RequestOptions] = None) -> HttpResponse[None]:
+        """
+        Permanently delete this Organization.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[None]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            method="DELETE",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return HttpResponse(response=_response, data=None)
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     def get(
         self, *, request_options: typing.Optional[RequestOptions] = None
@@ -119,6 +182,7 @@ class RawOrganizationDetailsClient:
         name: typing.Optional[str] = OMIT,
         display_name: typing.Optional[str] = OMIT,
         branding: typing.Optional[OrgBranding] = OMIT,
+        third_party_client_access: typing.Optional[OrgThirdPartyClientAccessEnum] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[UpdateOrganizationDetailsResponseContent]:
         """
@@ -133,6 +197,8 @@ class RawOrganizationDetailsClient:
             Friendly name of this organization.
 
         branding : typing.Optional[OrgBranding]
+
+        third_party_client_access : typing.Optional[OrgThirdPartyClientAccessEnum]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -151,6 +217,7 @@ class RawOrganizationDetailsClient:
                 "branding": convert_and_respect_annotation_metadata(
                     object_=branding, annotation=OrgBranding, direction="write"
                 ),
+                "third_party_client_access": third_party_client_access,
             },
             request_options=request_options,
             omit=OMIT,
@@ -233,6 +300,68 @@ class RawOrganizationDetailsClient:
 class AsyncRawOrganizationDetailsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
+
+    async def delete(self, *, request_options: typing.Optional[RequestOptions] = None) -> AsyncHttpResponse[None]:
+        """
+        Permanently delete this Organization.
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[None]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            method="DELETE",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return AsyncHttpResponse(response=_response, data=None)
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
     async def get(
         self, *, request_options: typing.Optional[RequestOptions] = None
@@ -324,6 +453,7 @@ class AsyncRawOrganizationDetailsClient:
         name: typing.Optional[str] = OMIT,
         display_name: typing.Optional[str] = OMIT,
         branding: typing.Optional[OrgBranding] = OMIT,
+        third_party_client_access: typing.Optional[OrgThirdPartyClientAccessEnum] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[UpdateOrganizationDetailsResponseContent]:
         """
@@ -338,6 +468,8 @@ class AsyncRawOrganizationDetailsClient:
             Friendly name of this organization.
 
         branding : typing.Optional[OrgBranding]
+
+        third_party_client_access : typing.Optional[OrgThirdPartyClientAccessEnum]
 
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
@@ -356,6 +488,7 @@ class AsyncRawOrganizationDetailsClient:
                 "branding": convert_and_respect_annotation_metadata(
                     object_=branding, annotation=OrgBranding, direction="write"
                 ),
+                "third_party_client_access": third_party_client_access,
             },
             request_options=request_options,
             omit=OMIT,

@@ -6,6 +6,7 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .idp_connection_deletion_behavior_enum import IdpConnectionDeletionBehaviorEnum
 from .idp_strategy_enum import IdpStrategyEnum
+from .org_third_party_client_access_config import OrgThirdPartyClientAccessConfig
 
 
 class GetConfigurationResponseContent(UniversalBaseModel):
@@ -15,6 +16,7 @@ class GetConfigurationResponseContent(UniversalBaseModel):
     """
 
     connection_deletion_behavior: typing.Optional[IdpConnectionDeletionBehaviorEnum] = None
+    third_party_client_access: typing.Optional[OrgThirdPartyClientAccessConfig] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

@@ -12,22 +12,26 @@ from .idp_sign_alg_digest_type_enum import IdpSignAlgDigestTypeEnum
 from .idp_sign_alg_type_enum import IdpSignAlgTypeEnum
 
 
-class Automatic(UniversalBaseModel):
-    metadata_url: typing_extensions.Annotated[
-        typing.Optional[str],
-        FieldMetadata(alias="metadataUrl"),
+class IdpSamlpOptionsRequestSignInEndpoint(UniversalBaseModel):
+    sign_in_endpoint: typing_extensions.Annotated[
+        str,
+        FieldMetadata(alias="signInEndpoint"),
+        pydantic.Field(alias="signInEndpoint", description="The endpoint URL for the IdP sign-in"),
+    ]
+    signing_cert: typing_extensions.Annotated[
+        str,
+        FieldMetadata(alias="signingCert"),
         pydantic.Field(
-            alias="metadataUrl",
-            description="URL provided by SAML provider which returns information used for creating the connection",
+            alias="signingCert", description="Signing certificate (encoded in PEM or CER) you retrieved from the IdP"
         ),
-    ] = None
+    ]
     sign_saml_request: typing_extensions.Annotated[
-        typing.Optional[bool],
+        bool,
         FieldMetadata(alias="signSAMLRequest"),
         pydantic.Field(
             alias="signSAMLRequest", description="When enabled, the SAML authentication request will be signed."
         ),
-    ] = None
+    ]
     signature_algorithm: typing_extensions.Annotated[
         typing.Optional[IdpSignAlgTypeEnum],
         FieldMetadata(alias="signatureAlgorithm"),
@@ -50,11 +54,6 @@ class Automatic(UniversalBaseModel):
             alias="bindingMethod", description="Defines the specific HTTP binding used for sending SAML messages."
         ),
     ] = None
-    cert: typing.Optional[str] = pydantic.Field(default=None)
-    """
-    Signing certificate (encoded in PEM or CER) you retrieved from the IdP
-    """
-
     idp_initiated: typing_extensions.Annotated[
         typing.Optional[IdpOptionsIdpInitiated],
         FieldMetadata(alias="idpInitiated"),
@@ -63,6 +62,11 @@ class Automatic(UniversalBaseModel):
     icon_url: typing.Optional[str] = pydantic.Field(default=None)
     """
     A URL pointing to an image file that represents your client application.
+    """
+
+    discovery_url: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    OIDC discovery URL of the trusted OIDC provider associated with the SAML IdP. Triggers auto-discovery of the OIDC metadata used to validate ID-JAGs for cross-app access.
     """
 
     if IS_PYDANTIC_V2:

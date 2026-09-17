@@ -37,6 +37,8 @@ OauthScope = typing.Union[
         "create:my_org:clients",
         "read:my_org:clients",
         "delete:my_org:clients",
+        "read:my_org:user_stores",
+        "delete:my_org:organizations",
     ],
     typing.Any,
 ]

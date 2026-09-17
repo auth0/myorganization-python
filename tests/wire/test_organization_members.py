@@ -10,9 +10,14 @@ def test_organization_members_list_() -> None:
         include_fields=True,
         from_="from",
         take=1,
+        include_totals=True,
     )
     verify_request_count(
-        test_id, "GET", "/members", {"fields": "fields", "include_fields": "true", "from": "from", "take": "1"}, 1
+        test_id,
+        "GET",
+        "/members",
+        {"fields": "fields", "include_fields": "true", "from": "from", "take": "1", "include_totals": "true"},
+        1,
     )
 
 

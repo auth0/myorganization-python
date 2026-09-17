@@ -155,7 +155,7 @@ class RawDomainsClient:
         self, *, domain: OrgDomainName, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[CreateOrganizationDomainResponseContent]:
         """
-        Create a new domain for this Organization.
+        Create a domain for an Auth0 Organization and optionally enable Organization Discovery for members during the user login flow
 
         Parameters
         ----------
@@ -270,7 +270,7 @@ class RawDomainsClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[GetOrganizationDomainResponseContent]:
         """
-        Retrieve details of a domain specified by ID for this Organization.
+        Retrieve the details of an Auth0 Organization domain using its unique domain ID, including the domain name and its current verification status.
 
         Parameters
         ----------
@@ -367,7 +367,7 @@ class RawDomainsClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[None]:
         """
-        Remove a domain specified by ID from this Organization.
+        Delete an Auth0 Organization domain using its unique domain ID, including all associated details and verification status.
 
         Parameters
         ----------
@@ -581,7 +581,7 @@ class AsyncRawDomainsClient:
         self, *, domain: OrgDomainName, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[CreateOrganizationDomainResponseContent]:
         """
-        Create a new domain for this Organization.
+        Create a domain for an Auth0 Organization and optionally enable Organization Discovery for members during the user login flow
 
         Parameters
         ----------
@@ -696,7 +696,7 @@ class AsyncRawDomainsClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[GetOrganizationDomainResponseContent]:
         """
-        Retrieve details of a domain specified by ID for this Organization.
+        Retrieve the details of an Auth0 Organization domain using its unique domain ID, including the domain name and its current verification status.
 
         Parameters
         ----------
@@ -793,7 +793,7 @@ class AsyncRawDomainsClient:
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[None]:
         """
-        Remove a domain specified by ID from this Organization.
+        Delete an Auth0 Organization domain using its unique domain ID, including all associated details and verification status.
 
         Parameters
         ----------

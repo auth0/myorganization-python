@@ -2,7 +2,7 @@
 
 import typing
 
-from .fed_metadata_xml import FedMetadataXml
 from .idp_adfs_options_response_adfs_server import IdpAdfsOptionsResponseAdfsServer
+from .idp_adfs_options_response_fed_metadata_xml import IdpAdfsOptionsResponseFedMetadataXml
 
-IdpAdfsOptionsResponse = typing.Union[IdpAdfsOptionsResponseAdfsServer, FedMetadataXml]
+IdpAdfsOptionsResponse = typing.Union[IdpAdfsOptionsResponseAdfsServer, IdpAdfsOptionsResponseFedMetadataXml]

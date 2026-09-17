@@ -3,6 +3,14 @@ from .conftest import get_client, verify_request_count
 from auth0.myorganization import OrgBranding, OrgBrandingColors
 
 
+def test_organizationDetails_delete() -> None:
+    """Test delete endpoint with WireMock"""
+    test_id = "organization_details.delete.0"
+    client = get_client(test_id)
+    client.organization_details.delete()
+    verify_request_count(test_id, "DELETE", "/", None, 1)
+
+
 def test_organizationDetails_get() -> None:
     """Test get endpoint with WireMock"""
     test_id = "organization_details.get.0"

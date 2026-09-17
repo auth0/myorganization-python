@@ -43,6 +43,7 @@ class RawInvitationsClient:
         from_: typing.Optional[str] = None,
         take: typing.Optional[int] = 50,
         sort: typing.Optional[str] = "created_at:-1",
+        include_totals: typing.Optional[bool] = False,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[MemberInvitation, ListMembersInvitationsResponseContent]:
         """
@@ -65,6 +66,9 @@ class RawInvitationsClient:
         sort : typing.Optional[str]
             Field to sort by. Use field:order where order is 1 for ascending and -1 for descending. Defaults to created_at:-1
 
+        include_totals : typing.Optional[bool]
+            When true, the response includes a 'total' count of items in the result set (reflecting any active filters), along with a 'total_is_capped' flag. The count is best-effort and capped at 1000; when the true size may be larger, 'total_is_capped' is true and 'total' is a lower bound. Omitted when not requested.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -82,6 +86,7 @@ class RawInvitationsClient:
                 "from": from_,
                 "take": take,
                 "sort": sort,
+                "include_totals": include_totals,
             },
             request_options=request_options,
         )
@@ -103,6 +108,7 @@ class RawInvitationsClient:
                     from_=_parsed_next,
                     take=take,
                     sort=sort,
+                    include_totals=include_totals,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -177,6 +183,7 @@ class RawInvitationsClient:
         auth_0_custom_domain: typing.Optional[str] = None,
         inviter: typing.Optional[MemberInvitationInviter] = OMIT,
         identity_provider_id: typing.Optional[str] = OMIT,
+        user_store_id: typing.Optional[str] = OMIT,
         ttl_sec: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[CreateMemberInvitationResponseContent]:
@@ -192,7 +199,10 @@ class RawInvitationsClient:
         inviter : typing.Optional[MemberInvitationInviter]
 
         identity_provider_id : typing.Optional[str]
-            Identity provider identifier.
+            Identity provider identifier. At least one of identity_provider_id or user_store_id must be provided.
+
+        user_store_id : typing.Optional[str]
+            The user store to route the invitation through. At least one of identity_provider_id or user_store_id must be provided.
 
         ttl_sec : typing.Optional[int]
             Number of seconds for which the invitation is valid before expiration. If unspecified or set to 0, this value defaults to 604800 seconds (7 days). Max value: 2592000 seconds (30 days).
@@ -216,6 +226,7 @@ class RawInvitationsClient:
                     object_=inviter, annotation=MemberInvitationInviter, direction="write"
                 ),
                 "identity_provider_id": identity_provider_id,
+                "user_store_id": user_store_id,
                 "ttl_sec": ttl_sec,
             },
             headers={
@@ -235,6 +246,102 @@ class RawInvitationsClient:
                     ),
                 )
                 return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def delete(
+        self, *, invitations: typing.Sequence[InvitationId], request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[None]:
+        """
+        Revoke a set of member invitations specified by IDs for this Organization.
+
+        Parameters
+        ----------
+        invitations : typing.Sequence[InvitationId]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[None]
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "delete-member-invitations",
+            method="POST",
+            json={
+                "invitations": invitations,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return HttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
@@ -411,95 +518,6 @@ class RawInvitationsClient:
             )
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def delete(
-        self, invitation_id: InvitationId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[None]:
-        """
-        Revoke a member invitation specified by ID for this Organization.
-
-        Parameters
-        ----------
-        invitation_id : InvitationId
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[None]
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"member-invitations/{encode_path_param(invitation_id)}",
-            method="DELETE",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return HttpResponse(response=_response, data=None)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        except ValidationError as e:
-            raise ParsingError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
-            )
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
 
 class AsyncRawInvitationsClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
@@ -513,6 +531,7 @@ class AsyncRawInvitationsClient:
         from_: typing.Optional[str] = None,
         take: typing.Optional[int] = 50,
         sort: typing.Optional[str] = "created_at:-1",
+        include_totals: typing.Optional[bool] = False,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[MemberInvitation, ListMembersInvitationsResponseContent]:
         """
@@ -535,6 +554,9 @@ class AsyncRawInvitationsClient:
         sort : typing.Optional[str]
             Field to sort by. Use field:order where order is 1 for ascending and -1 for descending. Defaults to created_at:-1
 
+        include_totals : typing.Optional[bool]
+            When true, the response includes a 'total' count of items in the result set (reflecting any active filters), along with a 'total_is_capped' flag. The count is best-effort and capped at 1000; when the true size may be larger, 'total_is_capped' is true and 'total' is a lower bound. Omitted when not requested.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -552,6 +574,7 @@ class AsyncRawInvitationsClient:
                 "from": from_,
                 "take": take,
                 "sort": sort,
+                "include_totals": include_totals,
             },
             request_options=request_options,
         )
@@ -575,6 +598,7 @@ class AsyncRawInvitationsClient:
                         from_=_parsed_next,
                         take=take,
                         sort=sort,
+                        include_totals=include_totals,
                         request_options=request_options,
                     )
 
@@ -650,6 +674,7 @@ class AsyncRawInvitationsClient:
         auth_0_custom_domain: typing.Optional[str] = None,
         inviter: typing.Optional[MemberInvitationInviter] = OMIT,
         identity_provider_id: typing.Optional[str] = OMIT,
+        user_store_id: typing.Optional[str] = OMIT,
         ttl_sec: typing.Optional[int] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[CreateMemberInvitationResponseContent]:
@@ -665,7 +690,10 @@ class AsyncRawInvitationsClient:
         inviter : typing.Optional[MemberInvitationInviter]
 
         identity_provider_id : typing.Optional[str]
-            Identity provider identifier.
+            Identity provider identifier. At least one of identity_provider_id or user_store_id must be provided.
+
+        user_store_id : typing.Optional[str]
+            The user store to route the invitation through. At least one of identity_provider_id or user_store_id must be provided.
 
         ttl_sec : typing.Optional[int]
             Number of seconds for which the invitation is valid before expiration. If unspecified or set to 0, this value defaults to 604800 seconds (7 days). Max value: 2592000 seconds (30 days).
@@ -689,6 +717,7 @@ class AsyncRawInvitationsClient:
                     object_=inviter, annotation=MemberInvitationInviter, direction="write"
                 ),
                 "identity_provider_id": identity_provider_id,
+                "user_store_id": user_store_id,
                 "ttl_sec": ttl_sec,
             },
             headers={
@@ -708,6 +737,102 @@ class AsyncRawInvitationsClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 401:
+                raise UnauthorizedError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 403:
+                raise ForbiddenError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        ErrorResponseContent,
+                        parse_obj_as(
+                            type_=ErrorResponseContent,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        except ValidationError as e:
+            raise ParsingError(
+                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
+            )
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def delete(
+        self, *, invitations: typing.Sequence[InvitationId], request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[None]:
+        """
+        Revoke a set of member invitations specified by IDs for this Organization.
+
+        Parameters
+        ----------
+        invitations : typing.Sequence[InvitationId]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[None]
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "delete-member-invitations",
+            method="POST",
+            json={
+                "invitations": invitations,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                return AsyncHttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
@@ -820,95 +945,6 @@ class AsyncRawInvitationsClient:
                     ),
                 )
                 return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 400:
-                raise BadRequestError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 401:
-                raise UnauthorizedError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 403:
-                raise ForbiddenError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 404:
-                raise NotFoundError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        ErrorResponseContent,
-                        parse_obj_as(
-                            type_=ErrorResponseContent,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        except ValidationError as e:
-            raise ParsingError(
-                status_code=_response.status_code, headers=dict(_response.headers), body=_response.json(), cause=e
-            )
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    async def delete(
-        self, invitation_id: InvitationId, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[None]:
-        """
-        Revoke a member invitation specified by ID for this Organization.
-
-        Parameters
-        ----------
-        invitation_id : InvitationId
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[None]
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"member-invitations/{encode_path_param(invitation_id)}",
-            method="DELETE",
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                return AsyncHttpResponse(response=_response, data=None)
             if _response.status_code == 400:
                 raise BadRequestError(
                     headers=dict(_response.headers),
