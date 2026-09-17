@@ -9,8 +9,8 @@ This is a major version change that contains breaking changes. Please review car
 - Removed `Automatic`, `Manual`, and `FedMetadataXml` from the package root exports [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - `domains.identity_providers.get` renamed to `list` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - `invitations.delete` resignatured to batch shape [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
-- `members.get` returns `OrgMemberBase` (no `roles`); fetch roles via `members.roles.list` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
-- SAML IdP: `cert` renamed to `signing_cert`; additional fields now required [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- `members.get` returns `OrgMemberBase` with no `roles`. Fetch roles via `members.roles.list` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- SAML IdP: `cert` renamed to `signing_cert`, and additional fields are now required [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - ADFS IdP: `fed_metadata_xml` is now required [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 
 **Added**
@@ -24,10 +24,10 @@ This is a major version change that contains breaking changes. Please review car
 - New OAuth scopes for all added surfaces (`OAuthScope`) [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 
 **Changed**
-- `identity_providers.list()` gains filter params; raises `BadRequestError` on HTTP 400 [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
-- Pagination: `include_totals` request param added; `total` and `total_is_capped` on paginated responses [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- `identity_providers.list()` gains filter params and raises `BadRequestError` on HTTP 400 [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- Pagination: `include_totals` request param added, plus `total` and `total_is_capped` on paginated responses [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - `user_store_id` added to `MemberInvitation` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
-- SAML IdP gains `discovery_url`; `options` / `attributes` optionality adjusted [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- SAML IdP gains `discovery_url`, and `options` / `attributes` optionality is adjusted [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - `members.roles.unassign` now calls `POST .../unassign-roles` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 
 ## [1.0.0](https://github.com/auth0/myorganization-python/tree/1.0.0) (2026-06-16)
