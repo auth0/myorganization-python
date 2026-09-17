@@ -14,10 +14,10 @@ This is a major version change that contains breaking changes. Please review car
 - ADFS IdP: `fed_metadata_xml` is now required [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 
 **Added**
-- User Stores - `client.organization.user_stores.list/create/get/update/delete` with corresponding request/response types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
-- Invitation Roles - `client.organization.invitations.roles.list/assign/unassign` (`GET`/`POST`/`DELETE member-invitations/{id}/roles`) with `AssignInvitationRolesRequest` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- User Stores - `client.organization.user_stores.list` with corresponding response types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- Invitation Roles - `client.organization.invitations.roles.list` (`GET member-invitations/{id}/roles`) [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - Delete Organization - `client.organization_details.delete()` (`DELETE /organizations/{id}`) [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
-- Cross-App Access - `CrossAppAccessResourceApp`, `CrossAppAccessResourceAppCreate`, `CrossAppAccessResourceAppUpdate` types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- Cross-App Access - `CrossAppAccessResourceApp` and related config/status types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - Third-party client access - `OrgThirdPartyClientAccessConfig` and related types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - SCIM provisioning on identity providers - `IdentityProvidersConfigProvisioningConfiguration` and related types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - Member access levels - `OrganizationMemberAccessLevelEnum` (`none`, `readonly`, `limited`, `full`) [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
@@ -26,7 +26,7 @@ This is a major version change that contains breaking changes. Please review car
 **Changed**
 - `identity_providers.list()` gains filter params; raises `BadRequestError` on HTTP 400 [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - Pagination: `include_totals` request param added; `total` and `total_is_capped` on paginated responses [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
-- `user_store_id` added to member create and `MemberInvitation` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- `user_store_id` added to `MemberInvitation` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - SAML IdP gains `discovery_url`; `options` / `attributes` optionality adjusted [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 - `members.roles.unassign` now calls `POST .../unassign-roles` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
 
