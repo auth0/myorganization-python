@@ -189,9 +189,13 @@ if typing.TYPE_CHECKING:
     from ._default_clients import DefaultAioHttpClient, DefaultAsyncHttpxClient
     from .client import AsyncAuth0, Auth0
     from .environment import Auth0Environment
+    from .myorganization_client import AsyncMyOrganizationClient, MyOrganizationClient
+    from .token_provider import AsyncTokenProvider, TokenProvider
     from .version import __version__
 _dynamic_imports: typing.Dict[str, str] = {
     "AsyncAuth0": ".client",
+    "AsyncMyOrganizationClient": ".myorganization_client",
+    "AsyncTokenProvider": ".token_provider",
     "Auth0": ".client",
     "Auth0Environment": ".environment",
     "BadRequestError": ".errors",
@@ -337,6 +341,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "MemberInvitation": ".types",
     "MemberInvitationInvitee": ".types",
     "MemberInvitationInviter": ".types",
+    "MyOrganizationClient": ".myorganization_client",
     "NotFoundError": ".errors",
     "OauthScope": ".types",
     "OrgBranding": ".types",
@@ -360,6 +365,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "Role": ".types",
     "RoleId": ".types",
     "StartOrganizationDomainVerificationResponseContent": ".types",
+    "TokenProvider": ".token_provider",
     "TooManyRequestsError": ".errors",
     "UnauthorizedError": ".errors",
     "UpdateIdentityProviderRequestContent": ".types",
@@ -400,6 +406,8 @@ def __dir__():
 
 __all__ = [
     "AsyncAuth0",
+    "AsyncMyOrganizationClient",
+    "AsyncTokenProvider",
     "Auth0",
     "Auth0Environment",
     "BadRequestError",
@@ -545,6 +553,7 @@ __all__ = [
     "MemberInvitation",
     "MemberInvitationInvitee",
     "MemberInvitationInviter",
+    "MyOrganizationClient",
     "NotFoundError",
     "OauthScope",
     "OrgBranding",
@@ -568,6 +577,7 @@ __all__ = [
     "Role",
     "RoleId",
     "StartOrganizationDomainVerificationResponseContent",
+    "TokenProvider",
     "TooManyRequestsError",
     "UnauthorizedError",
     "UpdateIdentityProviderRequestContent",
