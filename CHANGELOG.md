@@ -1,5 +1,35 @@
 # Change Log
 
+## [2.0.0](https://github.com/auth0/myorganization-python/tree/2.0.0) (2026-09-17)
+[Full Changelog](https://github.com/auth0/myorganization-python/compare/1.0.0...2.0.0)
+
+This is a major version change that contains breaking changes. Please review carefully before migrating.
+
+**Breaking Changes**
+- Removed `Automatic`, `Manual`, and `FedMetadataXml` from the package root exports [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- `domains.identity_providers.get` renamed to `list` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- `invitations.delete` resignatured to batch shape [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- `members.get` returns `OrgMemberBase` with no `roles`. Fetch roles via `members.roles.list` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- SAML IdP: `cert` renamed to `signing_cert`, and additional fields are now required [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- ADFS IdP: `fed_metadata_xml` is now required [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+
+**Added**
+- User Stores - `client.organization.user_stores.list` with corresponding response types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- Invitation Roles - `client.organization.invitations.roles.list` (`GET member-invitations/{id}/roles`) [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- Delete Organization - `client.organization_details.delete()` (`DELETE /organizations/{id}`) [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- Cross-App Access - `CrossAppAccessResourceApp` and related config/status types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- Third-party client access - `OrgThirdPartyClientAccessConfig` and related types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- SCIM provisioning on identity providers - `IdentityProvidersConfigProvisioningConfiguration` and related types [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- Member access levels - `OrganizationMemberAccessLevelEnum` (`none`, `readonly`, `limited`, `full`) [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- New OAuth scopes for all added surfaces (`OAuthScope`) [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+
+**Changed**
+- `identity_providers.list()` gains filter params and raises `BadRequestError` on HTTP 400 [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- Pagination: `include_totals` request param added, plus `total` and `total_is_capped` on paginated responses [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- `user_store_id` added to `MemberInvitation` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- SAML IdP gains `discovery_url`, and `options` / `attributes` optionality is adjusted [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+- `members.roles.unassign` now calls `POST .../unassign-roles` [\#41](https://github.com/auth0/myorganization-python/pull/41) ([fern-api](https://github.com/apps/fern-api))
+
 ## [1.0.0](https://github.com/auth0/myorganization-python/tree/1.0.0) (2026-06-16)
 
 `v1.0.0` is the first stable release of the **Auth0 My Organization Python SDK** — a Fern-generated SDK for the Auth0 My Organization API. The API surface is now stable.
