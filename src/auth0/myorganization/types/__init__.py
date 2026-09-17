@@ -6,7 +6,6 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .automatic import Automatic
     from .bad_request_error_body import BadRequestErrorBody
     from .base_user_attribute_map_item import BaseUserAttributeMapItem
     from .create_id_p_provisioning_config_response_content import CreateIdPProvisioningConfigResponseContent
@@ -17,14 +16,19 @@ if typing.TYPE_CHECKING:
     from .create_member_invitation_invitee import CreateMemberInvitationInvitee
     from .create_member_invitation_response_content import CreateMemberInvitationResponseContent
     from .create_organization_domain_response_content import CreateOrganizationDomainResponseContent
+    from .cross_app_access_resource_app import CrossAppAccessResourceApp
+    from .cross_app_access_resource_app_config import CrossAppAccessResourceAppConfig
+    from .cross_app_access_resource_app_status_config import CrossAppAccessResourceAppStatusConfig
+    from .cross_app_access_resource_app_status_config_enum import CrossAppAccessResourceAppStatusConfigEnum
+    from .cross_app_access_resource_app_status_enum import CrossAppAccessResourceAppStatusEnum
     from .domain_idp import DomainIdp
     from .error_response_content import ErrorResponseContent
-    from .fed_metadata_xml import FedMetadataXml
     from .get_configuration_response_content import GetConfigurationResponseContent
     from .get_id_p_provisioning_config_response_content import GetIdPProvisioningConfigResponseContent
     from .get_identity_provider_response_content import GetIdentityProviderResponseContent
     from .get_idp_configuration_response_content import GetIdpConfigurationResponseContent
     from .get_member_invitation_response_content import GetMemberInvitationResponseContent
+    from .get_member_invitation_roles_response_content import GetMemberInvitationRolesResponseContent
     from .get_organization_details_response_content import GetOrganizationDetailsResponseContent
     from .get_organization_domain_response_content import GetOrganizationDomainResponseContent
     from .get_organization_member_response_content import GetOrganizationMemberResponseContent
@@ -39,13 +43,31 @@ if typing.TYPE_CHECKING:
     from .identity_providers_config import IdentityProvidersConfig
     from .identity_providers_config_enabled_features_enum import IdentityProvidersConfigEnabledFeaturesEnum
     from .identity_providers_config_organization import IdentityProvidersConfigOrganization
+    from .identity_providers_config_provisioning_configuration import IdentityProvidersConfigProvisioningConfiguration
+    from .identity_providers_config_provisioning_configuration_on_login import (
+        IdentityProvidersConfigProvisioningConfigurationOnLogin,
+    )
+    from .identity_providers_config_provisioning_configuration_scim import (
+        IdentityProvidersConfigProvisioningConfigurationScim,
+    )
+    from .identity_providers_config_provisioning_configuration_scim_tokens import (
+        IdentityProvidersConfigProvisioningConfigurationScimTokens,
+    )
+    from .identity_providers_config_provisioning_configuration_scim_tokens_scopes import (
+        IdentityProvidersConfigProvisioningConfigurationScimTokensScopes,
+    )
+    from .identity_providers_config_provisioning_configuration_scim_tokens_scopes_enum import (
+        IdentityProvidersConfigProvisioningConfigurationScimTokensScopesEnum,
+    )
     from .identity_providers_config_provisioning_methods_enum import IdentityProvidersConfigProvisioningMethodsEnum
     from .identity_providers_config_strategy_base import IdentityProvidersConfigStrategyBase
     from .identity_providers_config_strategy_override import IdentityProvidersConfigStrategyOverride
     from .idp_adfs_options_request import IdpAdfsOptionsRequest
     from .idp_adfs_options_request_adfs_server import IdpAdfsOptionsRequestAdfsServer
+    from .idp_adfs_options_request_fed_metadata_xml import IdpAdfsOptionsRequestFedMetadataXml
     from .idp_adfs_options_response import IdpAdfsOptionsResponse
     from .idp_adfs_options_response_adfs_server import IdpAdfsOptionsResponseAdfsServer
+    from .idp_adfs_options_response_fed_metadata_xml import IdpAdfsOptionsResponseFedMetadataXml
     from .idp_adfs_request import IdpAdfsRequest
     from .idp_adfs_request_strategy import IdpAdfsRequestStrategy
     from .idp_adfs_response import IdpAdfsResponse
@@ -93,7 +115,11 @@ if typing.TYPE_CHECKING:
     from .idp_provisioning_scim_token_id import IdpProvisioningScimTokenId
     from .idp_provisioning_user_attribute_map_item import IdpProvisioningUserAttributeMapItem
     from .idp_samlp_options_request import IdpSamlpOptionsRequest
+    from .idp_samlp_options_request_metadata_url import IdpSamlpOptionsRequestMetadataUrl
+    from .idp_samlp_options_request_sign_in_endpoint import IdpSamlpOptionsRequestSignInEndpoint
     from .idp_samlp_options_response import IdpSamlpOptionsResponse
+    from .idp_samlp_options_response_metadata_url import IdpSamlpOptionsResponseMetadataUrl
+    from .idp_samlp_options_response_sign_in_endpoint import IdpSamlpOptionsResponseSignInEndpoint
     from .idp_samlp_request import IdpSamlpRequest
     from .idp_samlp_request_strategy import IdpSamlpRequestStrategy
     from .idp_samlp_response import IdpSamlpResponse
@@ -124,7 +150,7 @@ if typing.TYPE_CHECKING:
     from .list_organization_domains_response_content import ListOrganizationDomainsResponseContent
     from .list_organization_members_response_content import ListOrganizationMembersResponseContent
     from .list_roles_response_content import ListRolesResponseContent
-    from .manual import Manual
+    from .list_user_stores_response_content import ListUserStoresResponseContent
     from .member_invitation import MemberInvitation
     from .member_invitation_invitee import MemberInvitationInvitee
     from .member_invitation_inviter import MemberInvitationInviter
@@ -139,9 +165,13 @@ if typing.TYPE_CHECKING:
     from .org_domain_status_enum import OrgDomainStatusEnum
     from .org_id import OrgId
     from .org_member import OrgMember
+    from .org_member_base import OrgMemberBase
     from .org_member_id import OrgMemberId
     from .org_member_id_read_only import OrgMemberIdReadOnly
+    from .org_third_party_client_access_config import OrgThirdPartyClientAccessConfig
+    from .org_third_party_client_access_enum import OrgThirdPartyClientAccessEnum
     from .organization_access_level_enum import OrganizationAccessLevelEnum
+    from .organization_member_access_level_enum import OrganizationMemberAccessLevelEnum
     from .organization_member_roles_change_request_content import OrganizationMemberRolesChangeRequestContent
     from .role import Role
     from .role_id import RoleId
@@ -153,10 +183,11 @@ if typing.TYPE_CHECKING:
     from .update_organization_details_request_content import UpdateOrganizationDetailsRequestContent
     from .update_organization_details_response_content import UpdateOrganizationDetailsResponseContent
     from .user_attributes import UserAttributes
+    from .user_store import UserStore
+    from .user_store_id import UserStoreId
     from .validation_error_detail import ValidationErrorDetail
     from .validation_error_response_content import ValidationErrorResponseContent
 _dynamic_imports: typing.Dict[str, str] = {
-    "Automatic": ".automatic",
     "BadRequestErrorBody": ".bad_request_error_body",
     "BaseUserAttributeMapItem": ".base_user_attribute_map_item",
     "CreateIdPProvisioningConfigResponseContent": ".create_id_p_provisioning_config_response_content",
@@ -167,14 +198,19 @@ _dynamic_imports: typing.Dict[str, str] = {
     "CreateMemberInvitationInvitee": ".create_member_invitation_invitee",
     "CreateMemberInvitationResponseContent": ".create_member_invitation_response_content",
     "CreateOrganizationDomainResponseContent": ".create_organization_domain_response_content",
+    "CrossAppAccessResourceApp": ".cross_app_access_resource_app",
+    "CrossAppAccessResourceAppConfig": ".cross_app_access_resource_app_config",
+    "CrossAppAccessResourceAppStatusConfig": ".cross_app_access_resource_app_status_config",
+    "CrossAppAccessResourceAppStatusConfigEnum": ".cross_app_access_resource_app_status_config_enum",
+    "CrossAppAccessResourceAppStatusEnum": ".cross_app_access_resource_app_status_enum",
     "DomainIdp": ".domain_idp",
     "ErrorResponseContent": ".error_response_content",
-    "FedMetadataXml": ".fed_metadata_xml",
     "GetConfigurationResponseContent": ".get_configuration_response_content",
     "GetIdPProvisioningConfigResponseContent": ".get_id_p_provisioning_config_response_content",
     "GetIdentityProviderResponseContent": ".get_identity_provider_response_content",
     "GetIdpConfigurationResponseContent": ".get_idp_configuration_response_content",
     "GetMemberInvitationResponseContent": ".get_member_invitation_response_content",
+    "GetMemberInvitationRolesResponseContent": ".get_member_invitation_roles_response_content",
     "GetOrganizationDetailsResponseContent": ".get_organization_details_response_content",
     "GetOrganizationDomainResponseContent": ".get_organization_domain_response_content",
     "GetOrganizationMemberResponseContent": ".get_organization_member_response_content",
@@ -189,13 +225,21 @@ _dynamic_imports: typing.Dict[str, str] = {
     "IdentityProvidersConfig": ".identity_providers_config",
     "IdentityProvidersConfigEnabledFeaturesEnum": ".identity_providers_config_enabled_features_enum",
     "IdentityProvidersConfigOrganization": ".identity_providers_config_organization",
+    "IdentityProvidersConfigProvisioningConfiguration": ".identity_providers_config_provisioning_configuration",
+    "IdentityProvidersConfigProvisioningConfigurationOnLogin": ".identity_providers_config_provisioning_configuration_on_login",
+    "IdentityProvidersConfigProvisioningConfigurationScim": ".identity_providers_config_provisioning_configuration_scim",
+    "IdentityProvidersConfigProvisioningConfigurationScimTokens": ".identity_providers_config_provisioning_configuration_scim_tokens",
+    "IdentityProvidersConfigProvisioningConfigurationScimTokensScopes": ".identity_providers_config_provisioning_configuration_scim_tokens_scopes",
+    "IdentityProvidersConfigProvisioningConfigurationScimTokensScopesEnum": ".identity_providers_config_provisioning_configuration_scim_tokens_scopes_enum",
     "IdentityProvidersConfigProvisioningMethodsEnum": ".identity_providers_config_provisioning_methods_enum",
     "IdentityProvidersConfigStrategyBase": ".identity_providers_config_strategy_base",
     "IdentityProvidersConfigStrategyOverride": ".identity_providers_config_strategy_override",
     "IdpAdfsOptionsRequest": ".idp_adfs_options_request",
     "IdpAdfsOptionsRequestAdfsServer": ".idp_adfs_options_request_adfs_server",
+    "IdpAdfsOptionsRequestFedMetadataXml": ".idp_adfs_options_request_fed_metadata_xml",
     "IdpAdfsOptionsResponse": ".idp_adfs_options_response",
     "IdpAdfsOptionsResponseAdfsServer": ".idp_adfs_options_response_adfs_server",
+    "IdpAdfsOptionsResponseFedMetadataXml": ".idp_adfs_options_response_fed_metadata_xml",
     "IdpAdfsRequest": ".idp_adfs_request",
     "IdpAdfsRequestStrategy": ".idp_adfs_request_strategy",
     "IdpAdfsResponse": ".idp_adfs_response",
@@ -243,7 +287,11 @@ _dynamic_imports: typing.Dict[str, str] = {
     "IdpProvisioningScimTokenId": ".idp_provisioning_scim_token_id",
     "IdpProvisioningUserAttributeMapItem": ".idp_provisioning_user_attribute_map_item",
     "IdpSamlpOptionsRequest": ".idp_samlp_options_request",
+    "IdpSamlpOptionsRequestMetadataUrl": ".idp_samlp_options_request_metadata_url",
+    "IdpSamlpOptionsRequestSignInEndpoint": ".idp_samlp_options_request_sign_in_endpoint",
     "IdpSamlpOptionsResponse": ".idp_samlp_options_response",
+    "IdpSamlpOptionsResponseMetadataUrl": ".idp_samlp_options_response_metadata_url",
+    "IdpSamlpOptionsResponseSignInEndpoint": ".idp_samlp_options_response_sign_in_endpoint",
     "IdpSamlpRequest": ".idp_samlp_request",
     "IdpSamlpRequestStrategy": ".idp_samlp_request_strategy",
     "IdpSamlpResponse": ".idp_samlp_response",
@@ -274,7 +322,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ListOrganizationDomainsResponseContent": ".list_organization_domains_response_content",
     "ListOrganizationMembersResponseContent": ".list_organization_members_response_content",
     "ListRolesResponseContent": ".list_roles_response_content",
-    "Manual": ".manual",
+    "ListUserStoresResponseContent": ".list_user_stores_response_content",
     "MemberInvitation": ".member_invitation",
     "MemberInvitationInvitee": ".member_invitation_invitee",
     "MemberInvitationInviter": ".member_invitation_inviter",
@@ -289,9 +337,13 @@ _dynamic_imports: typing.Dict[str, str] = {
     "OrgDomainStatusEnum": ".org_domain_status_enum",
     "OrgId": ".org_id",
     "OrgMember": ".org_member",
+    "OrgMemberBase": ".org_member_base",
     "OrgMemberId": ".org_member_id",
     "OrgMemberIdReadOnly": ".org_member_id_read_only",
+    "OrgThirdPartyClientAccessConfig": ".org_third_party_client_access_config",
+    "OrgThirdPartyClientAccessEnum": ".org_third_party_client_access_enum",
     "OrganizationAccessLevelEnum": ".organization_access_level_enum",
+    "OrganizationMemberAccessLevelEnum": ".organization_member_access_level_enum",
     "OrganizationMemberRolesChangeRequestContent": ".organization_member_roles_change_request_content",
     "Role": ".role",
     "RoleId": ".role_id",
@@ -301,6 +353,8 @@ _dynamic_imports: typing.Dict[str, str] = {
     "UpdateOrganizationDetailsRequestContent": ".update_organization_details_request_content",
     "UpdateOrganizationDetailsResponseContent": ".update_organization_details_response_content",
     "UserAttributes": ".user_attributes",
+    "UserStore": ".user_store",
+    "UserStoreId": ".user_store_id",
     "ValidationErrorDetail": ".validation_error_detail",
     "ValidationErrorResponseContent": ".validation_error_response_content",
 }
@@ -328,7 +382,6 @@ def __dir__():
 
 
 __all__ = [
-    "Automatic",
     "BadRequestErrorBody",
     "BaseUserAttributeMapItem",
     "CreateIdPProvisioningConfigResponseContent",
@@ -339,14 +392,19 @@ __all__ = [
     "CreateMemberInvitationInvitee",
     "CreateMemberInvitationResponseContent",
     "CreateOrganizationDomainResponseContent",
+    "CrossAppAccessResourceApp",
+    "CrossAppAccessResourceAppConfig",
+    "CrossAppAccessResourceAppStatusConfig",
+    "CrossAppAccessResourceAppStatusConfigEnum",
+    "CrossAppAccessResourceAppStatusEnum",
     "DomainIdp",
     "ErrorResponseContent",
-    "FedMetadataXml",
     "GetConfigurationResponseContent",
     "GetIdPProvisioningConfigResponseContent",
     "GetIdentityProviderResponseContent",
     "GetIdpConfigurationResponseContent",
     "GetMemberInvitationResponseContent",
+    "GetMemberInvitationRolesResponseContent",
     "GetOrganizationDetailsResponseContent",
     "GetOrganizationDomainResponseContent",
     "GetOrganizationMemberResponseContent",
@@ -361,13 +419,21 @@ __all__ = [
     "IdentityProvidersConfig",
     "IdentityProvidersConfigEnabledFeaturesEnum",
     "IdentityProvidersConfigOrganization",
+    "IdentityProvidersConfigProvisioningConfiguration",
+    "IdentityProvidersConfigProvisioningConfigurationOnLogin",
+    "IdentityProvidersConfigProvisioningConfigurationScim",
+    "IdentityProvidersConfigProvisioningConfigurationScimTokens",
+    "IdentityProvidersConfigProvisioningConfigurationScimTokensScopes",
+    "IdentityProvidersConfigProvisioningConfigurationScimTokensScopesEnum",
     "IdentityProvidersConfigProvisioningMethodsEnum",
     "IdentityProvidersConfigStrategyBase",
     "IdentityProvidersConfigStrategyOverride",
     "IdpAdfsOptionsRequest",
     "IdpAdfsOptionsRequestAdfsServer",
+    "IdpAdfsOptionsRequestFedMetadataXml",
     "IdpAdfsOptionsResponse",
     "IdpAdfsOptionsResponseAdfsServer",
+    "IdpAdfsOptionsResponseFedMetadataXml",
     "IdpAdfsRequest",
     "IdpAdfsRequestStrategy",
     "IdpAdfsResponse",
@@ -415,7 +481,11 @@ __all__ = [
     "IdpProvisioningScimTokenId",
     "IdpProvisioningUserAttributeMapItem",
     "IdpSamlpOptionsRequest",
+    "IdpSamlpOptionsRequestMetadataUrl",
+    "IdpSamlpOptionsRequestSignInEndpoint",
     "IdpSamlpOptionsResponse",
+    "IdpSamlpOptionsResponseMetadataUrl",
+    "IdpSamlpOptionsResponseSignInEndpoint",
     "IdpSamlpRequest",
     "IdpSamlpRequestStrategy",
     "IdpSamlpResponse",
@@ -446,7 +516,7 @@ __all__ = [
     "ListOrganizationDomainsResponseContent",
     "ListOrganizationMembersResponseContent",
     "ListRolesResponseContent",
-    "Manual",
+    "ListUserStoresResponseContent",
     "MemberInvitation",
     "MemberInvitationInvitee",
     "MemberInvitationInviter",
@@ -461,9 +531,13 @@ __all__ = [
     "OrgDomainStatusEnum",
     "OrgId",
     "OrgMember",
+    "OrgMemberBase",
     "OrgMemberId",
     "OrgMemberIdReadOnly",
+    "OrgThirdPartyClientAccessConfig",
+    "OrgThirdPartyClientAccessEnum",
     "OrganizationAccessLevelEnum",
+    "OrganizationMemberAccessLevelEnum",
     "OrganizationMemberRolesChangeRequestContent",
     "Role",
     "RoleId",
@@ -473,6 +547,8 @@ __all__ = [
     "UpdateOrganizationDetailsRequestContent",
     "UpdateOrganizationDetailsResponseContent",
     "UserAttributes",
+    "UserStore",
+    "UserStoreId",
     "ValidationErrorDetail",
     "ValidationErrorResponseContent",
 ]

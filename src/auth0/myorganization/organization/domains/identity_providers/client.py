@@ -24,7 +24,7 @@ class IdentityProvidersClient:
         """
         return self._raw_client
 
-    def get(
+    def list(
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ListDomainIdentityProvidersResponseContent:
         """
@@ -49,11 +49,11 @@ class IdentityProvidersClient:
         client = Auth0(
             token="YOUR_TOKEN",
         )
-        client.organization.domains.identity_providers.get(
+        client.organization.domains.identity_providers.list(
             domain_id="domain_id",
         )
         """
-        _response = self._raw_client.get(domain_id, request_options=request_options)
+        _response = self._raw_client.list(domain_id, request_options=request_options)
         return _response.data
 
 
@@ -72,7 +72,7 @@ class AsyncIdentityProvidersClient:
         """
         return self._raw_client
 
-    async def get(
+    async def list(
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> ListDomainIdentityProvidersResponseContent:
         """
@@ -102,12 +102,12 @@ class AsyncIdentityProvidersClient:
 
 
         async def main() -> None:
-            await client.organization.domains.identity_providers.get(
+            await client.organization.domains.identity_providers.list(
                 domain_id="domain_id",
             )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.get(domain_id, request_options=request_options)
+        _response = await self._raw_client.list(domain_id, request_options=request_options)
         return _response.data

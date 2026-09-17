@@ -35,6 +35,7 @@ class RawMembersClient:
         include_fields: typing.Optional[bool] = True,
         from_: typing.Optional[str] = None,
         take: typing.Optional[int] = 50,
+        include_totals: typing.Optional[bool] = False,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> SyncPager[OrgMember, ListOrganizationMembersResponseContent]:
         """
@@ -54,6 +55,9 @@ class RawMembersClient:
         take : typing.Optional[int]
             Number of results per page. Defaults to 50.
 
+        include_totals : typing.Optional[bool]
+            When true, the response includes a 'total' count of items in the result set (reflecting any active filters), along with a 'total_is_capped' flag. The count is best-effort and capped at 1000; when the true size may be larger, 'total_is_capped' is true and 'total' is a lower bound. Omitted when not requested.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -70,6 +74,7 @@ class RawMembersClient:
                 "include_fields": include_fields,
                 "from": from_,
                 "take": take,
+                "include_totals": include_totals,
             },
             request_options=request_options,
         )
@@ -90,6 +95,7 @@ class RawMembersClient:
                     include_fields=include_fields,
                     from_=_parsed_next,
                     take=take,
+                    include_totals=include_totals,
                     request_options=request_options,
                 )
                 return SyncPager(has_next=_has_next, items=_items, get_next=_get_next, response=_parsed_response)
@@ -281,6 +287,7 @@ class AsyncRawMembersClient:
         include_fields: typing.Optional[bool] = True,
         from_: typing.Optional[str] = None,
         take: typing.Optional[int] = 50,
+        include_totals: typing.Optional[bool] = False,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncPager[OrgMember, ListOrganizationMembersResponseContent]:
         """
@@ -300,6 +307,9 @@ class AsyncRawMembersClient:
         take : typing.Optional[int]
             Number of results per page. Defaults to 50.
 
+        include_totals : typing.Optional[bool]
+            When true, the response includes a 'total' count of items in the result set (reflecting any active filters), along with a 'total_is_capped' flag. The count is best-effort and capped at 1000; when the true size may be larger, 'total_is_capped' is true and 'total' is a lower bound. Omitted when not requested.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -316,6 +326,7 @@ class AsyncRawMembersClient:
                 "include_fields": include_fields,
                 "from": from_,
                 "take": take,
+                "include_totals": include_totals,
             },
             request_options=request_options,
         )
@@ -338,6 +349,7 @@ class AsyncRawMembersClient:
                         include_fields=include_fields,
                         from_=_parsed_next,
                         take=take,
+                        include_totals=include_totals,
                         request_options=request_options,
                     )
 

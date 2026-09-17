@@ -13,12 +13,20 @@ def test_organization_invitations_list_() -> None:
         from_="from",
         take=1,
         sort="sort",
+        include_totals=True,
     )
     verify_request_count(
         test_id,
         "GET",
         "/member-invitations",
-        {"fields": "fields", "include_fields": "true", "from": "from", "take": "1", "sort": "sort"},
+        {
+            "fields": "fields",
+            "include_fields": "true",
+            "from": "from",
+            "take": "1",
+            "sort": "sort",
+            "include_totals": "true",
+        },
         1,
     )
 
@@ -43,6 +51,16 @@ def test_organization_invitations_create() -> None:
     verify_request_count(test_id, "POST", "/member-invitations", None, 1)
 
 
+def test_organization_invitations_delete() -> None:
+    """Test delete endpoint with WireMock"""
+    test_id = "organization.invitations.delete.0"
+    client = get_client(test_id)
+    client.organization.invitations.delete(
+        invitations=["uinv_0000000000000001", "uinv_0000000000000002", "uinv_0000000000000003"],
+    )
+    verify_request_count(test_id, "POST", "/delete-member-invitations", None, 1)
+
+
 def test_organization_invitations_get() -> None:
     """Test get endpoint with WireMock"""
     test_id = "organization.invitations.get.0"
@@ -55,13 +73,3 @@ def test_organization_invitations_get() -> None:
     verify_request_count(
         test_id, "GET", "/member-invitations/invitation_id", {"fields": "fields", "include_fields": "true"}, 1
     )
-
-
-def test_organization_invitations_delete() -> None:
-    """Test delete endpoint with WireMock"""
-    test_id = "organization.invitations.delete.0"
-    client = get_client(test_id)
-    client.organization.invitations.delete(
-        invitation_id="invitation_id",
-    )
-    verify_request_count(test_id, "DELETE", "/member-invitations/invitation_id", None, 1)

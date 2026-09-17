@@ -7,8 +7,13 @@ def test_organization_identityProviders_list_() -> None:
     """Test list endpoint with WireMock"""
     test_id = "organization.identity_providers.list_.0"
     client = get_client(test_id)
-    client.organization.identity_providers.list()
-    verify_request_count(test_id, "GET", "/identity-providers", None, 1)
+    client.organization.identity_providers.list(
+        member_access_level=["none"],
+        is_enabled=True,
+    )
+    verify_request_count(
+        test_id, "GET", "/identity-providers", {"member_access_level": "none", "is_enabled": "true"}, 1
+    )
 
 
 def test_organization_identityProviders_create() -> None:

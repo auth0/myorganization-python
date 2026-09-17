@@ -4,6 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .cross_app_access_resource_app import CrossAppAccessResourceApp
 
 
 class IdpUpdateBase(UniversalBaseModel):
@@ -25,6 +26,16 @@ class IdpUpdateBase(UniversalBaseModel):
     is_enabled: typing.Optional[bool] = pydantic.Field(default=None)
     """
     True if the identity provider is enabled for the organization. Requires access_level to be 'full' or 'limited'
+    """
+
+    use_for_third_party_client_access: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    True if third-party applications can use it. If false, only first-party applications with the connection enabled can use it. Requires access_level to be 'full'. Defaults to false.
+    """
+
+    cross_app_access_resource_app: typing.Optional[CrossAppAccessResourceApp] = pydantic.Field(default=None)
+    """
+    Cross-app access resource application configuration. Only present when the cross-app access resource application feature is enabled for your organization.
     """
 
     if IS_PYDANTIC_V2:

@@ -11,6 +11,7 @@ from ...types.create_identity_provider_response_content import CreateIdentityPro
 from ...types.get_identity_provider_response_content import GetIdentityProviderResponseContent
 from ...types.idp_id import IdpId
 from ...types.list_identity_providers_response_content import ListIdentityProvidersResponseContent
+from ...types.organization_access_level_enum import OrganizationAccessLevelEnum
 from ...types.update_identity_provider_request_content import UpdateIdentityProviderRequestContent
 from ...types.update_identity_provider_response_content import UpdateIdentityProviderResponseContent
 from .raw_client import AsyncRawIdentityProvidersClient, RawIdentityProvidersClient
@@ -40,12 +41,26 @@ class IdentityProvidersClient:
         """
         return self._raw_client
 
-    def list(self, *, request_options: typing.Optional[RequestOptions] = None) -> ListIdentityProvidersResponseContent:
+    def list(
+        self,
+        *,
+        member_access_level: typing.Optional[
+            typing.Union[OrganizationAccessLevelEnum, typing.Sequence[OrganizationAccessLevelEnum]]
+        ] = None,
+        is_enabled: typing.Optional[bool] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> ListIdentityProvidersResponseContent:
         """
-        Retrieve a list of all Identity Providers for this Organization.
+        Retrieve the comprehensive list of identity providers and their respective configurations associated with an Auth0 Organization.
 
         Parameters
         ----------
+        member_access_level : typing.Optional[typing.Union[OrganizationAccessLevelEnum, typing.Sequence[OrganizationAccessLevelEnum]]]
+            When present, only connections whose Organization Member Access Level matches one of the provided values are returned. Accepted values are full, limited, readonly and none.
+
+        is_enabled : typing.Optional[bool]
+            Filter the returned list by enabled status. When `true`, only enabled items are returned; when `false`, only disabled items; when omitted, all items are returned.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -61,16 +76,21 @@ class IdentityProvidersClient:
         client = Auth0(
             token="YOUR_TOKEN",
         )
-        client.organization.identity_providers.list()
+        client.organization.identity_providers.list(
+            member_access_level=["none"],
+            is_enabled=True,
+        )
         """
-        _response = self._raw_client.list(request_options=request_options)
+        _response = self._raw_client.list(
+            member_access_level=member_access_level, is_enabled=is_enabled, request_options=request_options
+        )
         return _response.data
 
     def create(
         self, *, request: CreateIdentityProviderRequestContent, request_options: typing.Optional[RequestOptions] = None
     ) -> CreateIdentityProviderResponseContent:
         """
-        Create a new Identity Provider for this Organization.
+        Create a new enterprise Identity Provider utilizing the specified configuration settings and details for this Auth0 Organization.
 
         Parameters
         ----------
@@ -327,13 +347,25 @@ class AsyncIdentityProvidersClient:
         return self._raw_client
 
     async def list(
-        self, *, request_options: typing.Optional[RequestOptions] = None
+        self,
+        *,
+        member_access_level: typing.Optional[
+            typing.Union[OrganizationAccessLevelEnum, typing.Sequence[OrganizationAccessLevelEnum]]
+        ] = None,
+        is_enabled: typing.Optional[bool] = None,
+        request_options: typing.Optional[RequestOptions] = None,
     ) -> ListIdentityProvidersResponseContent:
         """
-        Retrieve a list of all Identity Providers for this Organization.
+        Retrieve the comprehensive list of identity providers and their respective configurations associated with an Auth0 Organization.
 
         Parameters
         ----------
+        member_access_level : typing.Optional[typing.Union[OrganizationAccessLevelEnum, typing.Sequence[OrganizationAccessLevelEnum]]]
+            When present, only connections whose Organization Member Access Level matches one of the provided values are returned. Accepted values are full, limited, readonly and none.
+
+        is_enabled : typing.Optional[bool]
+            Filter the returned list by enabled status. When `true`, only enabled items are returned; when `false`, only disabled items; when omitted, all items are returned.
+
         request_options : typing.Optional[RequestOptions]
             Request-specific configuration.
 
@@ -354,19 +386,24 @@ class AsyncIdentityProvidersClient:
 
 
         async def main() -> None:
-            await client.organization.identity_providers.list()
+            await client.organization.identity_providers.list(
+                member_access_level=["none"],
+                is_enabled=True,
+            )
 
 
         asyncio.run(main())
         """
-        _response = await self._raw_client.list(request_options=request_options)
+        _response = await self._raw_client.list(
+            member_access_level=member_access_level, is_enabled=is_enabled, request_options=request_options
+        )
         return _response.data
 
     async def create(
         self, *, request: CreateIdentityProviderRequestContent, request_options: typing.Optional[RequestOptions] = None
     ) -> CreateIdentityProviderResponseContent:
         """
-        Create a new Identity Provider for this Organization.
+        Create a new enterprise Identity Provider utilizing the specified configuration settings and details for this Auth0 Organization.
 
         Parameters
         ----------

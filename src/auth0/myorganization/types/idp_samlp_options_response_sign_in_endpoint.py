@@ -12,7 +12,7 @@ from .idp_sign_alg_digest_type_enum import IdpSignAlgDigestTypeEnum
 from .idp_sign_alg_type_enum import IdpSignAlgTypeEnum
 
 
-class Manual(UniversalBaseModel):
+class IdpSamlpOptionsResponseSignInEndpoint(UniversalBaseModel):
     sign_in_endpoint: typing_extensions.Annotated[
         typing.Optional[str],
         FieldMetadata(alias="signInEndpoint"),
@@ -60,6 +60,11 @@ class Manual(UniversalBaseModel):
     icon_url: typing.Optional[str] = pydantic.Field(default=None)
     """
     A URL pointing to an image file that represents your client application.
+    """
+
+    discovery_url: typing.Optional[str] = pydantic.Field(default=None)
+    """
+    OIDC discovery URL of the trusted OIDC provider associated with the SAML IdP. Triggers auto-discovery of the OIDC metadata used to validate ID-JAGs for cross-app access.
     """
 
     if IS_PYDANTIC_V2:

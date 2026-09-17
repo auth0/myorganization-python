@@ -1,5 +1,68 @@
 # Reference
 ## OrganizationDetails
+<details><summary><code>client.organization_details.<a href="src/auth0.myorganization/organization_details/client.py">delete</a>()</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Permanently delete this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization_details.delete()
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.organization_details.<a href="src/auth0.myorganization/organization_details/client.py">get</a>() -> GetOrganizationDetailsResponseContent</code></summary>
 <dl>
 <dd>
@@ -208,6 +271,91 @@ client.organization.configuration.get()
 </dl>
 </details>
 
+## Organization UserStores
+<details><summary><code>client.organization.user_stores.<a href="src/auth0.myorganization/organization/user_stores/client.py">list</a>(...) -> ListUserStoresResponseContent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve the user stores for the associated Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.user_stores.list(
+    member_access_level=[
+        "none"
+    ],
+    is_enabled=True,
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**member_access_level:** `typing.Optional[typing.Union[typing.Optional[OrganizationAccessLevelEnum], typing.Sequence[typing.Optional[OrganizationAccessLevelEnum]]]]` — When present, only connections whose Organization Member Access Level matches one of the provided values are returned. Accepted values are full, limited, readonly and none.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**is_enabled:** `typing.Optional[bool]` — Filter the returned list by enabled status. When `true`, only enabled items are returned; when `false`, only disabled items; when omitted, all items are returned.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Organization Domains
 <details><summary><code>client.organization.domains.<a href="src/auth0.myorganization/organization/domains/client.py">list</a>(...) -> ListOrganizationDomainsResponseContent</code></summary>
 <dl>
@@ -303,7 +451,7 @@ client.organization.domains.list(
 <dl>
 <dd>
 
-Create a new domain for this Organization.
+Create a domain for an Auth0 Organization and optionally enable Organization Discovery for members during the user login flow
 </dd>
 </dl>
 </dd>
@@ -376,7 +524,7 @@ client.organization.domains.create(
 <dl>
 <dd>
 
-Retrieve details of a domain specified by ID for this Organization.
+Retrieve the details of an Auth0 Organization domain using its unique domain ID, including the domain name and its current verification status.
 </dd>
 </dl>
 </dd>
@@ -449,7 +597,7 @@ client.organization.domains.get(
 <dl>
 <dd>
 
-Remove a domain specified by ID from this Organization.
+Delete an Auth0 Organization domain using its unique domain ID, including all associated details and verification status.
 </dd>
 </dl>
 </dd>
@@ -511,7 +659,7 @@ client.organization.domains.delete(
 </details>
 
 ## Organization IdentityProviders
-<details><summary><code>client.organization.identity_providers.<a href="src/auth0.myorganization/organization/identity_providers/client.py">list</a>() -> ListIdentityProvidersResponseContent</code></summary>
+<details><summary><code>client.organization.identity_providers.<a href="src/auth0.myorganization/organization/identity_providers/client.py">list</a>(...) -> ListIdentityProvidersResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -523,7 +671,7 @@ client.organization.domains.delete(
 <dl>
 <dd>
 
-Retrieve a list of all Identity Providers for this Organization.
+Retrieve the comprehensive list of identity providers and their respective configurations associated with an Auth0 Organization.
 </dd>
 </dl>
 </dd>
@@ -546,7 +694,12 @@ client = Auth0(
     environment=Auth0Environment.DEFAULT,
 )
 
-client.organization.identity_providers.list()
+client.organization.identity_providers.list(
+    member_access_level=[
+        "none"
+    ],
+    is_enabled=True,
+)
 
 ```
 </dd>
@@ -558,6 +711,22 @@ client.organization.identity_providers.list()
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**member_access_level:** `typing.Optional[typing.Union[typing.Optional[OrganizationAccessLevelEnum], typing.Sequence[typing.Optional[OrganizationAccessLevelEnum]]]]` — When present, only connections whose Organization Member Access Level matches one of the provided values are returned. Accepted values are full, limited, readonly and none.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**is_enabled:** `typing.Optional[bool]` — Filter the returned list by enabled status. When `true`, only enabled items are returned; when `false`, only disabled items; when omitted, all items are returned.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>
@@ -586,7 +755,7 @@ client.organization.identity_providers.list()
 <dl>
 <dd>
 
-Create a new Identity Provider for this Organization.
+Create a new enterprise Identity Provider utilizing the specified configuration settings and details for this Auth0 Organization.
 </dd>
 </dl>
 </dd>
@@ -1100,6 +1269,7 @@ client.organization.members.list(
     include_fields=True,
     from_="from",
     take=1,
+    include_totals=True,
 )
 
 ```
@@ -1141,6 +1311,14 @@ client.organization.members.list(
 <dd>
 
 **take:** `typing.Optional[int]` — Number of results per page. Defaults to 50.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_totals:** `typing.Optional[bool]` — When true, the response includes a 'total' count of items in the result set (reflecting any active filters), along with a 'total_is_capped' flag. The count is best-effort and capped at 1000; when the true size may be larger, 'total_is_capped' is true and 'total' is a lower bound. Omitted when not requested.
     
 </dd>
 </dl>
@@ -1369,6 +1547,7 @@ client.organization.invitations.list(
     from_="from",
     take=1,
     sort="sort",
+    include_totals=True,
 )
 
 ```
@@ -1418,6 +1597,14 @@ client.organization.invitations.list(
 <dd>
 
 **sort:** `typing.Optional[str]` — Field to sort by. Use field:order where order is 1 for ascending and -1 for descending. Defaults to created_at:-1
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**include_totals:** `typing.Optional[bool]` — When true, the response includes a 'total' count of items in the result set (reflecting any active filters), along with a 'total_is_capped' flag. The count is best-effort and capped at 1000; when the true size may be larger, 'total_is_capped' is true and 'total' is a lower bound. Omitted when not requested.
     
 </dd>
 </dl>
@@ -1526,7 +1713,15 @@ client.organization.invitations.create(
 <dl>
 <dd>
 
-**identity_provider_id:** `typing.Optional[str]` — Identity provider identifier.
+**identity_provider_id:** `typing.Optional[str]` — Identity provider identifier. At least one of identity_provider_id or user_store_id must be provided.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**user_store_id:** `typing.Optional[str]` — The user store to route the invitation through. At least one of identity_provider_id or user_store_id must be provided.
     
 </dd>
 </dl>
@@ -1535,6 +1730,83 @@ client.organization.invitations.create(
 <dd>
 
 **ttl_sec:** `typing.Optional[int]` — Number of seconds for which the invitation is valid before expiration. If unspecified or set to 0, this value defaults to 604800 seconds (7 days). Max value: 2592000 seconds (30 days).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.organization.invitations.<a href="src/auth0.myorganization/organization/invitations/client.py">delete</a>(...)</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Revoke a set of member invitations specified by IDs for this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.invitations.delete(
+    invitations=[
+        "uinv_0000000000000001",
+        "uinv_0000000000000002",
+        "uinv_0000000000000003"
+    ],
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**invitations:** `typing.List[InvitationId]` 
     
 </dd>
 </dl>
@@ -1626,79 +1898,6 @@ client.organization.invitations.get(
 <dd>
 
 **include_fields:** `typing.Optional[bool]` — Whether specified fields are to be included (true) or excluded (false). Defaults to true
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.organization.invitations.<a href="src/auth0.myorganization/organization/invitations/client.py">delete</a>(...)</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Revoke a member invitation specified by ID for this Organization.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```python
-from auth0.myorganization import Auth0
-from auth0.myorganization.environment import Auth0Environment
-
-client = Auth0(
-    token="<token>",
-    environment=Auth0Environment.DEFAULT,
-)
-
-client.organization.invitations.delete(
-    invitation_id="invitation_id",
-)
-
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**invitation_id:** `InvitationId` 
     
 </dd>
 </dl>
@@ -1949,7 +2148,7 @@ client.organization.domains.verify.create(
 </details>
 
 ## Organization Domains IdentityProviders
-<details><summary><code>client.organization.domains.identity_providers.<a href="src/auth0.myorganization/organization/domains/identity_providers/client.py">get</a>(...) -> ListDomainIdentityProvidersResponseContent</code></summary>
+<details><summary><code>client.organization.domains.identity_providers.<a href="src/auth0.myorganization/organization/domains/identity_providers/client.py">list</a>(...) -> ListDomainIdentityProvidersResponseContent</code></summary>
 <dl>
 <dd>
 
@@ -1984,7 +2183,7 @@ client = Auth0(
     environment=Auth0Environment.DEFAULT,
 )
 
-client.organization.domains.identity_providers.get(
+client.organization.domains.identity_providers.list(
     domain_id="domain_id",
 )
 
@@ -2710,6 +2909,80 @@ client.organization.identity_providers.provisioning.scim_tokens.delete(
 <dd>
 
 **idp_scim_token_id:** `IdpProvisioningScimTokenId` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**request_options:** `typing.Optional[RequestOptions]` — Request-specific configuration.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Organization Invitations Roles
+<details><summary><code>client.organization.invitations.roles.<a href="src/auth0.myorganization/organization/invitations/roles/client.py">list</a>(...) -> GetMemberInvitationRolesResponseContent</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve the roles assigned to a member invitation specified by ID for this Organization.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```python
+from auth0.myorganization import Auth0
+from auth0.myorganization.environment import Auth0Environment
+
+client = Auth0(
+    token="<token>",
+    environment=Auth0Environment.DEFAULT,
+)
+
+client.organization.invitations.roles.list(
+    invitation_id="invitation_id",
+)
+
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**invitation_id:** `InvitationId` 
     
 </dd>
 </dl>

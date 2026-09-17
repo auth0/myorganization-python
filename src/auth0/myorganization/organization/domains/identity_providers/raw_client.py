@@ -25,7 +25,7 @@ class RawIdentityProvidersClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get(
+    def list(
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> HttpResponse[ListDomainIdentityProvidersResponseContent]:
         """
@@ -127,7 +127,7 @@ class AsyncRawIdentityProvidersClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get(
+    async def list(
         self, domain_id: OrgDomainId, *, request_options: typing.Optional[RequestOptions] = None
     ) -> AsyncHttpResponse[ListDomainIdentityProvidersResponseContent]:
         """

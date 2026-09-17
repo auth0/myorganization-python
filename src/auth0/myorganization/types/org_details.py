@@ -5,6 +5,7 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .org_branding import OrgBranding
+from .org_third_party_client_access_enum import OrgThirdPartyClientAccessEnum
 
 
 class OrgDetails(UniversalBaseModel):
@@ -19,6 +20,7 @@ class OrgDetails(UniversalBaseModel):
     """
 
     branding: typing.Optional[OrgBranding] = None
+    third_party_client_access: typing.Optional[OrgThirdPartyClientAccessEnum] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

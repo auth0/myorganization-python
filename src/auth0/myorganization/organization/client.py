@@ -15,6 +15,7 @@ if typing.TYPE_CHECKING:
     from .members.client import AsyncMembersClient, MembersClient
     from .memberships.client import AsyncMembershipsClient, MembershipsClient
     from .roles.client import AsyncRolesClient, RolesClient
+    from .user_stores.client import AsyncUserStoresClient, UserStoresClient
 
 
 class OrganizationClient:
@@ -22,6 +23,7 @@ class OrganizationClient:
         self._raw_client = RawOrganizationClient(client_wrapper=client_wrapper)
         self._client_wrapper = client_wrapper
         self._configuration: typing.Optional[ConfigurationClient] = None
+        self._user_stores: typing.Optional[UserStoresClient] = None
         self._domains: typing.Optional[DomainsClient] = None
         self._identity_providers: typing.Optional[IdentityProvidersClient] = None
         self._members: typing.Optional[MembersClient] = None
@@ -47,6 +49,14 @@ class OrganizationClient:
 
             self._configuration = ConfigurationClient(client_wrapper=self._client_wrapper)
         return self._configuration
+
+    @property
+    def user_stores(self):
+        if self._user_stores is None:
+            from .user_stores.client import UserStoresClient  # noqa: E402
+
+            self._user_stores = UserStoresClient(client_wrapper=self._client_wrapper)
+        return self._user_stores
 
     @property
     def domains(self):
@@ -102,6 +112,7 @@ class AsyncOrganizationClient:
         self._raw_client = AsyncRawOrganizationClient(client_wrapper=client_wrapper)
         self._client_wrapper = client_wrapper
         self._configuration: typing.Optional[AsyncConfigurationClient] = None
+        self._user_stores: typing.Optional[AsyncUserStoresClient] = None
         self._domains: typing.Optional[AsyncDomainsClient] = None
         self._identity_providers: typing.Optional[AsyncIdentityProvidersClient] = None
         self._members: typing.Optional[AsyncMembersClient] = None
@@ -127,6 +138,14 @@ class AsyncOrganizationClient:
 
             self._configuration = AsyncConfigurationClient(client_wrapper=self._client_wrapper)
         return self._configuration
+
+    @property
+    def user_stores(self):
+        if self._user_stores is None:
+            from .user_stores.client import AsyncUserStoresClient  # noqa: E402
+
+            self._user_stores = AsyncUserStoresClient(client_wrapper=self._client_wrapper)
+        return self._user_stores
 
     @property
     def domains(self):

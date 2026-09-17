@@ -4,10 +4,12 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .cross_app_access_resource_app import CrossAppAccessResourceApp
 from .idp_google_apps_options_response import IdpGoogleAppsOptionsResponse
 from .idp_google_apps_response_strategy import IdpGoogleAppsResponseStrategy
 from .idp_id import IdpId
 from .organization_access_level_enum import OrganizationAccessLevelEnum
+from .organization_member_access_level_enum import OrganizationMemberAccessLevelEnum
 
 
 class IdpGoogleAppsResponse(UniversalBaseModel):
@@ -16,7 +18,7 @@ class IdpGoogleAppsResponse(UniversalBaseModel):
     """
 
     strategy: IdpGoogleAppsResponseStrategy
-    options: IdpGoogleAppsOptionsResponse = pydantic.Field()
+    options: typing.Optional[IdpGoogleAppsOptionsResponse] = pydantic.Field(default=None)
     """
     Identity provider specific options.
     """
@@ -53,6 +55,20 @@ class IdpGoogleAppsResponse(UniversalBaseModel):
     """
 
     access_level: typing.Optional[OrganizationAccessLevelEnum] = None
+    member_access_level: typing.Optional[OrganizationMemberAccessLevelEnum] = pydantic.Field(default=None)
+    """
+    The Organization Member Access Level for this connection.
+    """
+
+    use_for_third_party_client_access: typing.Optional[bool] = pydantic.Field(default=None)
+    """
+    True if third-party applications can use it. If false, only first-party applications with the connection enabled can use it. Defaults to false.
+    """
+
+    cross_app_access_resource_app: typing.Optional[CrossAppAccessResourceApp] = pydantic.Field(default=None)
+    """
+    Cross-app access resource application configuration. Only present when the cross-app access resource application feature is enabled for your organization.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

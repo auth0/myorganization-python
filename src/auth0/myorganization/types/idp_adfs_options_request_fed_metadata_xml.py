@@ -8,15 +8,15 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from ..core.serialization import FieldMetadata
 
 
-class FedMetadataXml(UniversalBaseModel):
+class IdpAdfsOptionsRequestFedMetadataXml(UniversalBaseModel):
     fed_metadata_xml: typing_extensions.Annotated[
-        typing.Optional[str],
+        str,
         FieldMetadata(alias="fedMetadataXml"),
         pydantic.Field(
             alias="fedMetadataXml",
             description="A Federation Metadata XML file in ADFS is a crucial document that serves as a blueprint for establishing trust between an ADFS server and other relying parties that want to consume identity information from ADFS.",
         ),
-    ] = None
+    ]
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
